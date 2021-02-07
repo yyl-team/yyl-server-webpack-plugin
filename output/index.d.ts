@@ -1,4 +1,4 @@
-import { Compiler } from 'webpack';
+import { Compiler, WebpackOptionsNormalized } from 'webpack';
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base';
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
     /** 本地服务根目录 */
@@ -22,6 +22,9 @@ export interface ProxyProps {
     pathRewrite: {
         [reg: string]: string;
     };
+}
+export interface InitConfigResult {
+    devServer: WebpackOptionsNormalized['devServer'];
 }
 export declare class YylServerWebpackPlugin extends YylWebpackPluginBase {
     option: YylServerWebpackPluginProperty;

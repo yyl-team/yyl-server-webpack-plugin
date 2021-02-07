@@ -82,11 +82,10 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         return __awaiter(this, void 0, void 0, function* () {
             const { option } = this;
             const { options } = compiler;
-            const proxyhosts = [];
             if (!option.enable) {
                 return;
             }
-            options.devServer = Object.assign(Object.assign({}, options.devServer), { port: option.port, public: option.static, headers: (() => {
+            options.devServer = Object.assign(Object.assign({}, options.devServer), { port: option.port, static: option.static, headers: (() => {
                     if (option.proxy.enable) {
                         return {
                             'Access-Control-Allow-Origin': '*',
@@ -100,7 +99,9 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                 })(), proxy: (() => {
                     const r = {};
                     if (option.proxy.enable) {
-                        proxyhosts.map(host => getHost(host)).forEach((host) => {
+                        option.proxy.hosts
+                            .map((host) => getHost(host))
+                            .forEach((host) => {
                             const replaceStr = `/proxy_${host.replace(/\./g, '_')}`;
                             r[replaceStr] = {
                                 target: `http://${host}`,

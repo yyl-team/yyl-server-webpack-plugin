@@ -1,6 +1,5 @@
 import path from 'path'
-import { Compiler, EnvironmentPlugin } from 'webpack'
-import { LocalserverConfig, CommitConfig, YylConfigAlias, Env } from 'yyl-config-types'
+import { Compiler, WebpackOptionsNormalized } from 'webpack'
 import {
   AssetsInfo,
   YylWebpackPluginBaseOption,
@@ -39,6 +38,10 @@ export interface ProxyProps {
 function getHost(url: string) {
   const iUrl = `http:${url.replace(/^https?:/, '')}`
   return new URL(iUrl).hostname
+}
+
+export interface InitConfigResult {
+  devServer: WebpackOptionsNormalized['devServer']
 }
 
 export class YylServerWebpackPlugin extends YylWebpackPluginBase {
@@ -90,17 +93,13 @@ export class YylServerWebpackPlugin extends YylWebpackPluginBase {
   async apply(compiler: Compiler) {
     const { option } = this
     const { options } = compiler
-
-    const proxyhosts: string[] = []
-
     if (!option.enable) {
       return
     }
-
     options.devServer = {
       ...options.devServer,
       port: option.port,
-      public: option.static,
+      static: option.static,
       headers: (() => {
         if (option.proxy.enable) {
           return {
@@ -118,18 +117,20 @@ export class YylServerWebpackPlugin extends YylWebpackPluginBase {
         } = {}
 
         if (option.proxy.enable) {
-          proxyhosts.map(host => getHost(host)).forEach((host) => {
-            const replaceStr = `/proxy_${host.replace(/\./g, '_')}`
-            r[replaceStr] = {
-              target: `http://${host}`,
-              changeOrigin: true,
-              pathRewrite: (() => {
-                const r2: ProxyProps['pathRewrite'] = {}
-                r2[`^${replaceStr}`] = ''
-                return r2
-              })()
-            }
-          })
+          option.proxy.hosts
+            .map((host) => getHost(host))
+            .forEach((host) => {
+              const replaceStr = `/proxy_${host.replace(/\./g, '_')}`
+              r[replaceStr] = {
+                target: `http://${host}`,
+                changeOrigin: true,
+                pathRewrite: (() => {
+                  const r2: ProxyProps['pathRewrite'] = {}
+                  r2[`^${replaceStr}`] = ''
+                  return r2
+                })()
+              }
+            })
         }
         return r
       })()

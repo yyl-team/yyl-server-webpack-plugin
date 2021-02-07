@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { merge } = require('webpack-merge')
 const IPlugin = require('../../../')
 
 console.log(IPlugin)
@@ -9,11 +10,12 @@ console.log(IPlugin)
 const iPluginOption = {
   context: __dirname,
   static: './dist',
-  port: 5000
+  port: 5000,
+  enable: true
 }
 // - plugin options
 
-const wConfig = {
+const wConfig = merge({
   mode: 'development',
   context: __dirname,
   entry: {
@@ -58,6 +60,6 @@ const wConfig = {
     }),
     new IPlugin(iPluginOption)
   ]
-}
+})
 
 module.exports = wConfig
