@@ -4,8 +4,7 @@ const iWeakMap = new WeakMap()
 
 export function createHooks() {
   return {
-    beforeCopy: new AsyncSeriesWaterfallHook(['pluginArgs']),
-    afterCopy: new AsyncSeriesWaterfallHook(['pluginArgs'])
+    emit: new AsyncSeriesWaterfallHook(['pluginArgs'])
   }
 }
 

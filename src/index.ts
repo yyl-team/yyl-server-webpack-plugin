@@ -1,11 +1,14 @@
 import path from 'path'
-import { Compiler, WebpackOptionsNormalized } from 'webpack'
+import { Compiler, WebpackOptionsNormalized, Compilation } from 'webpack'
+import { getHooks } from './hooks'
+import chalk from 'chalk'
 import {
   AssetsInfo,
   YylWebpackPluginBaseOption,
   YylWebpackPluginBase
 } from 'yyl-webpack-plugin-base'
 import { URL } from 'url'
+import { LANG } from './lang'
 
 const PLUGIN_NAME = 'yylServer'
 
@@ -21,6 +24,8 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
     hosts: string[]
     enable: boolean
   }
+  /** 构建成功后打开的页面 */
+  homePage?: string
   /** 是否启动插件 */
   enable?: boolean
 }
@@ -35,9 +40,13 @@ export interface ProxyProps {
   }
 }
 
-function getHost(url: string) {
+function formatHost(url: string) {
   const iUrl = `http:${url.replace(/^https?:/, '')}`
-  return new URL(iUrl).hostname
+  const { hostname } = new URL(iUrl)
+  return {
+    hostname,
+    replaceStr: `/proxy_${hostname.replace(/\./g, '_')}`
+  }
 }
 
 export interface InitConfigResult {
@@ -45,8 +54,17 @@ export interface InitConfigResult {
 }
 
 export class YylServerWebpackPlugin extends YylWebpackPluginBase {
+  static getHooks(compilation: Compilation) {
+    return getHooks(compilation)
+  }
+
+  static getName() {
+    return PLUGIN_NAME
+  }
+
   option: YylServerWebpackPluginProperty = {
     context: process.cwd(),
+    homePage: '',
     port: 5000,
     hmr: true,
     static: path.resolve(process.cwd(), './dist'),
@@ -81,6 +99,10 @@ export class YylServerWebpackPlugin extends YylWebpackPluginBase {
       }
     }
 
+    if (option?.homePage) {
+      this.option.homePage = option.homePage
+    }
+
     if (option?.enable !== undefined) {
       this.option.enable = option.enable
     }
@@ -96,10 +118,15 @@ export class YylServerWebpackPlugin extends YylWebpackPluginBase {
     if (!option.enable) {
       return
     }
+
+    const hostParams = option.proxy.enable ? option.proxy.hosts.map((url) => formatHost(url)) : []
+
     options.devServer = {
       ...options.devServer,
       port: option.port,
       static: option.static,
+      open: !!option.homePage,
+      openPage: option.homePage,
       headers: (() => {
         if (option.proxy.enable) {
           return {
@@ -116,25 +143,72 @@ export class YylServerWebpackPlugin extends YylWebpackPluginBase {
           [path: string]: ProxyProps
         } = {}
 
-        if (option.proxy.enable) {
-          option.proxy.hosts
-            .map((host) => getHost(host))
-            .forEach((host) => {
-              const replaceStr = `/proxy_${host.replace(/\./g, '_')}`
-              r[replaceStr] = {
-                target: `http://${host}`,
-                changeOrigin: true,
-                pathRewrite: (() => {
-                  const r2: ProxyProps['pathRewrite'] = {}
-                  r2[`^${replaceStr}`] = ''
-                  return r2
-                })()
+        hostParams.forEach((hostObj) => {
+          r[hostObj.replaceStr] = {
+            target: `http://${hostObj.hostname}`,
+            changeOrigin: true,
+            pathRewrite: (() => {
+              const r2: ProxyProps['pathRewrite'] = {}
+              r2[`^${hostObj.replaceStr}`] = ''
+              return r2
+            })()
+          }
+        })
+
+        return r
+      })(),
+      useLocalIp: true
+    }
+
+    const { compilation, done } = await this.initCompilation(compiler)
+    const iHooks = getHooks(compilation)
+    const logger = compilation.getLogger(PLUGIN_NAME)
+    logger.group(PLUGIN_NAME)
+    if (hostParams.length) {
+      Object.keys(compilation.assets)
+        .filter((key) => {
+          return ['.js', '.css', '.html', '.map'].includes(path.extname(key))
+        })
+        .forEach((key) => {
+          const asset = compilation.assets[key]
+          const replaceLogs: string[] = []
+          let r = asset.source().toString()
+          hostParams.forEach((hostObj) => {
+            ;[
+              `http://${hostObj.hostname}`,
+              `https://${hostObj.hostname}`,
+              `//${hostObj.hostname}`
+            ].forEach((mathPath) => {
+              if (r.match(mathPath)) {
+                replaceLogs.push(
+                  `> ${LANG.REPLACE}: ${chalk.yellow(mathPath)} -> ${chalk.cyan(
+                    hostObj.replaceStr
+                  )}`
+                )
+                r = r.split(mathPath).join(hostObj.replaceStr)
               }
             })
-        }
-        return r
-      })()
+          })
+
+          if (replaceLogs.length) {
+            logger.info(`${chalk.red('*')} ${LANG.UPDATE_FILE}: ${chalk.magenta(key)}`)
+            replaceLogs.forEach((str) => {
+              logger.info(str)
+            })
+            this.updateAssets({
+              compilation,
+              assetsInfo: {
+                dist: key,
+                source: Buffer.from(r)
+              }
+            })
+          }
+        })
     }
+
+    await iHooks.emit.promise()
+    logger.groupEnd()
+    done()
   }
 }
 

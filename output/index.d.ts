@@ -1,4 +1,4 @@
-import { Compiler, WebpackOptionsNormalized } from 'webpack';
+import { Compiler, WebpackOptionsNormalized, Compilation } from 'webpack';
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base';
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
     /** 本地服务根目录 */
@@ -12,6 +12,8 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
         hosts: string[];
         enable: boolean;
     };
+    /** 构建成功后打开的页面 */
+    homePage?: string;
     /** 是否启动插件 */
     enable?: boolean;
 }
@@ -27,6 +29,8 @@ export interface InitConfigResult {
     devServer: WebpackOptionsNormalized['devServer'];
 }
 export declare class YylServerWebpackPlugin extends YylWebpackPluginBase {
+    static getHooks(compilation: Compilation): any;
+    static getName(): string;
     option: YylServerWebpackPluginProperty;
     constructor(option?: YylServerWebpackPluginOption);
     apply(compiler: Compiler): Promise<void>;

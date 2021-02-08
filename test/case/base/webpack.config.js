@@ -11,7 +11,12 @@ const iPluginOption = {
   context: __dirname,
   static: './dist',
   port: 5000,
-  enable: true
+  enable: true,
+  homePage: 'http://127.0.0.1:5000/html/index.html',
+  proxy: {
+    enable: true,
+    hosts: ['//www.yy.com']
+  }
 }
 // - plugin options
 
@@ -22,9 +27,9 @@ const wConfig = merge({
     main: ['./src/entry/index/index.js']
   },
   output: {
-    path: path.join(__dirname, './dist/js'),
-    filename: '[name]-[chunkhash:8].js',
-    chunkFilename: 'async_component/[name]-[chunkhash:8].js'
+    path: path.join(__dirname, './dist'),
+    filename: 'js/[name]-[chunkhash:8].js',
+    chunkFilename: 'js/async_component/[name]-[chunkhash:8].js'
   },
   module: {
     rules: [
@@ -55,7 +60,7 @@ const wConfig = merge({
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/entry/index/index.html',
-      filename: '../html/index.html',
+      filename: 'html/index.html',
       chunks: 'all'
     }),
     new IPlugin(iPluginOption)
