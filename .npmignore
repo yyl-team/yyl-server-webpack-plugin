@@ -17,3 +17,6 @@
 *.tmp
 
 .DS_Store
+
+rollup.config.js
+tsconfig.json
