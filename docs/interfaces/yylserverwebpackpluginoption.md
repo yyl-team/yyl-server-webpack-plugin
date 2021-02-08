@@ -13,7 +13,6 @@
 ### Properties
 
 - [context](yylserverwebpackpluginoption.md#context)
-- [enable](yylserverwebpackpluginoption.md#enable)
 - [hmr](yylserverwebpackpluginoption.md#hmr)
 - [homePage](yylserverwebpackpluginoption.md#homepage)
 - [port](yylserverwebpackpluginoption.md#port)
@@ -30,23 +29,13 @@ Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:21
 
 ___
 
-### enable
-
-• `Optional` **enable**: *undefined* \| *boolean*
-
-是否启动插件
-
-Defined in: [src/index.ts:32](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L32)
-
-___
-
 ### hmr
 
 • `Optional` **hmr**: *undefined* \| *boolean*
 
 是否启动热更新
 
-Defined in: [src/index.ts:21](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L21)
+Defined in: [src/index.ts:21](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L21)
 
 ___
 
@@ -56,7 +45,7 @@ ___
 
 构建成功后打开的页面
 
-Defined in: [src/index.ts:30](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L30)
+Defined in: [src/index.ts:30](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L30)
 
 ___
 
@@ -66,7 +55,7 @@ ___
 
 本地服务端口
 
-Defined in: [src/index.ts:19](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L19)
+Defined in: [src/index.ts:19](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L19)
 
 ___
 
@@ -76,7 +65,7 @@ ___
 
 需要代理的域名
 
-Defined in: [src/index.ts:23](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L23)
+Defined in: [src/index.ts:23](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L23)
 
 ___
 
@@ -86,4 +75,4 @@ ___
 
 本地服务根目录
 
-Defined in: [src/index.ts:17](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L17)
+Defined in: [src/index.ts:17](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L17)

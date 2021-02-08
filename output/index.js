@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.0.3
+ * yyl-server-webpack-plugin cjs 1.0.4
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -1957,7 +1957,6 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             port: 5000,
             hmr: true,
             static: path__default['default'].resolve(process.cwd(), './dist'),
-            enable: false,
             proxy: {
                 hosts: [],
                 enable: false
@@ -1978,9 +1977,6 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         if (option === null || option === void 0 ? void 0 : option.homePage) {
             this.option.homePage = option.homePage;
         }
-        if ((option === null || option === void 0 ? void 0 : option.enable) !== undefined) {
-            this.option.enable = option.enable;
-        }
         if ((option === null || option === void 0 ? void 0 : option.hmr) !== undefined) {
             this.option.hmr = option.hmr;
         }
@@ -1995,10 +1991,7 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const { option } = this;
-            const { options, watchMode, watching } = compiler;
-            if (!option.enable) {
-                return;
-            }
+            const { options } = compiler;
             const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
             const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
             options.devServer = Object.assign({ port: option.port, static: option.static, open: !!option.homePage, openPage: option.homePage, headers: (() => {

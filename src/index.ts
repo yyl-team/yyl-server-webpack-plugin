@@ -28,8 +28,6 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
   }
   /** 构建成功后打开的页面 */
   homePage?: string
-  /** 是否启动插件 */
-  enable?: boolean
 }
 
 export type YylServerWebpackPluginProperty = Required<YylServerWebpackPluginOption>
@@ -70,7 +68,6 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
     port: 5000,
     hmr: true,
     static: path.resolve(process.cwd(), './dist'),
-    enable: false,
     proxy: {
       hosts: [],
       enable: false
@@ -105,10 +102,6 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
       this.option.homePage = option.homePage
     }
 
-    if (option?.enable !== undefined) {
-      this.option.enable = option.enable
-    }
-
     if (option?.hmr !== undefined) {
       this.option.hmr = option.hmr
     }
@@ -116,10 +109,7 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
 
   async apply(compiler: Compiler) {
     const { option } = this
-    const { options, watchMode, watching } = compiler
-    if (!option.enable) {
-      return
-    }
+    const { options } = compiler
 
     const iHosts = option?.proxy?.hosts || []
 
