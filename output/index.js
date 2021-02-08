@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.0.0
+ * yyl-server-webpack-plugin cjs 1.0.1
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -2073,4 +2073,4 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
 }
 module.exports = YylServerWebpackPlugin;
 
-exports.YylServerWebpackPlugin = YylServerWebpackPlugin;
+exports.default = YylServerWebpackPlugin;

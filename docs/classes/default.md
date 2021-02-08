@@ -1,44 +1,44 @@
-[yyl-server-webpack-plugin](../README.md) / [Exports](../modules.md) / YylServerWebpackPlugin
+[yyl-server-webpack-plugin](../README.md) / [Exports](../modules.md) / default
 
-# Class: YylServerWebpackPlugin
+# Class: default
 
 ## Hierarchy
 
 * *YylWebpackPluginBase*
 
-  ↳ **YylServerWebpackPlugin**
+  ↳ **default**
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](yylserverwebpackplugin.md#constructor)
+- [constructor](default.md#constructor)
 
 ### Properties
 
-- [alias](yylserverwebpackplugin.md#alias)
-- [assetMap](yylserverwebpackplugin.md#assetmap)
-- [context](yylserverwebpackplugin.md#context)
-- [filename](yylserverwebpackplugin.md#filename)
-- [name](yylserverwebpackplugin.md#name)
-- [option](yylserverwebpackplugin.md#option)
+- [alias](default.md#alias)
+- [assetMap](default.md#assetmap)
+- [context](default.md#context)
+- [filename](default.md#filename)
+- [name](default.md#name)
+- [option](default.md#option)
 
 ### Methods
 
-- [addDependencies](yylserverwebpackplugin.md#adddependencies)
-- [apply](yylserverwebpackplugin.md#apply)
-- [getFileName](yylserverwebpackplugin.md#getfilename)
-- [getFileType](yylserverwebpackplugin.md#getfiletype)
-- [initCompilation](yylserverwebpackplugin.md#initcompilation)
-- [updateAssets](yylserverwebpackplugin.md#updateassets)
-- [getHooks](yylserverwebpackplugin.md#gethooks)
-- [getName](yylserverwebpackplugin.md#getname)
+- [addDependencies](default.md#adddependencies)
+- [apply](default.md#apply)
+- [getFileName](default.md#getfilename)
+- [getFileType](default.md#getfiletype)
+- [initCompilation](default.md#initcompilation)
+- [updateAssets](default.md#updateassets)
+- [getHooks](default.md#gethooks)
+- [getName](default.md#getname)
 
 ## Constructors
 
 ### constructor
 
-\+ **new YylServerWebpackPlugin**(`option?`: [*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md)): [*YylServerWebpackPlugin*](yylserverwebpackplugin.md)
+\+ **new default**(`option?`: [*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md)): [*default*](default.md)
 
 #### Parameters:
 
@@ -46,9 +46,9 @@ Name | Type |
 ------ | ------ |
 `option?` | [*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md) |
 
-**Returns:** [*YylServerWebpackPlugin*](yylserverwebpackplugin.md)
+**Returns:** [*default*](default.md)
 
-Defined in: [src/index.ts:76](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L76)
+Defined in: [src/index.ts:76](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L76)
 
 ## Properties
 
@@ -106,7 +106,7 @@ ___
 
 • **option**: *Required*<[*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md)\>
 
-Defined in: [src/index.ts:65](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L65)
+Defined in: [src/index.ts:65](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L65)
 
 ## Methods
 
@@ -140,7 +140,7 @@ Name | Type |
 
 **Returns:** *Promise*<*void*\>
 
-Defined in: [src/index.ts:115](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L115)
+Defined in: [src/index.ts:115](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L115)
 
 ___
 
@@ -230,7 +230,7 @@ Name | Type |
 
 **Returns:** *any*
 
-Defined in: [src/index.ts:57](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L57)
+Defined in: [src/index.ts:57](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L57)
 
 ___
 
@@ -240,4 +240,4 @@ ___
 
 **Returns:** *string*
 
-Defined in: [src/index.ts:61](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L61)
+Defined in: [src/index.ts:61](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L61)

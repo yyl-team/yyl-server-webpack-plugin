@@ -53,7 +53,7 @@ export interface InitConfigResult {
   devServer: WebpackOptionsNormalized['devServer']
 }
 
-export class YylServerWebpackPlugin extends YylWebpackPluginBase {
+export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
   static getHooks(compilation: Compilation) {
     return getHooks(compilation)
   }

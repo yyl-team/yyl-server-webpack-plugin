@@ -28,7 +28,7 @@ export interface ProxyProps {
 export interface InitConfigResult {
     devServer: WebpackOptionsNormalized['devServer'];
 }
-export declare class YylServerWebpackPlugin extends YylWebpackPluginBase {
+export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
     static getHooks(compilation: Compilation): any;
     static getName(): string;
     option: YylServerWebpackPluginProperty;
