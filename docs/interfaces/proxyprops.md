@@ -20,7 +20,7 @@
 
 • **changeOrigin**: *boolean*
 
-Defined in: [src/index.ts:37](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L37)
+Defined in: [src/index.ts:37](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L37)
 
 ___
 
@@ -28,7 +28,7 @@ ___
 
 • **pathRewrite**: { [reg: string]: *string*;  }
 
-Defined in: [src/index.ts:38](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L38)
+Defined in: [src/index.ts:38](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L38)
 
 ___
 
@@ -36,4 +36,4 @@ ___
 
 • **target**: *string*
 
-Defined in: [src/index.ts:36](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L36)
+Defined in: [src/index.ts:36](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L36)

@@ -36,7 +36,7 @@ ___
 
 是否启动插件
 
-Defined in: [src/index.ts:30](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L30)
+Defined in: [src/index.ts:30](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L30)
 
 ___
 
@@ -46,7 +46,7 @@ ___
 
 是否启动热更新
 
-Defined in: [src/index.ts:21](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L21)
+Defined in: [src/index.ts:21](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L21)
 
 ___
 
@@ -56,7 +56,7 @@ ___
 
 构建成功后打开的页面
 
-Defined in: [src/index.ts:28](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L28)
+Defined in: [src/index.ts:28](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L28)
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 本地服务端口
 
-Defined in: [src/index.ts:19](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L19)
+Defined in: [src/index.ts:19](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L19)
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 需要代理的域名
 
-Defined in: [src/index.ts:23](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L23)
+Defined in: [src/index.ts:23](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L23)
 
 ___
 
@@ -86,4 +86,4 @@ ___
 
 本地服务根目录
 
-Defined in: [src/index.ts:17](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/513275c/src/index.ts#L17)
+Defined in: [src/index.ts:17](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L17)
