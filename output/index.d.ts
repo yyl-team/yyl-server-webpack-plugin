@@ -16,8 +16,6 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
     };
     /** 构建成功后打开的页面 */
     homePage?: string;
-    /** 是否启动插件 */
-    enable?: boolean;
 }
 export declare type YylServerWebpackPluginProperty = Required<YylServerWebpackPluginOption>;
 export interface ProxyProps {
