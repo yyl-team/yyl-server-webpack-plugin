@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.0.1
+ * yyl-server-webpack-plugin cjs 1.0.3
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -1992,14 +1992,16 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         return PLUGIN_NAME;
     }
     apply(compiler) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const { option } = this;
-            const { options } = compiler;
+            const { options, watchMode, watching } = compiler;
             if (!option.enable) {
                 return;
             }
-            const hostParams = option.proxy.enable ? option.proxy.hosts.map((url) => formatHost(url)) : [];
-            options.devServer = Object.assign(Object.assign({}, options.devServer), { port: option.port, static: option.static, open: !!option.homePage, openPage: option.homePage, headers: (() => {
+            const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
+            const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
+            options.devServer = Object.assign({ port: option.port, static: option.static, open: !!option.homePage, openPage: option.homePage, headers: (() => {
                     if (option.proxy.enable) {
                         return {
                             'Access-Control-Allow-Origin': '*',
@@ -2024,12 +2026,16 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                         };
                     });
                     return r;
-                })(), useLocalIp: true });
+                })(), useLocalIp: true }, options.devServer);
+            let isWatchMode = false;
+            compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
+                isWatchMode = true;
+            });
             const { compilation, done } = yield this.initCompilation(compiler);
             const iHooks = getHooks(compilation);
             const logger = compilation.getLogger(PLUGIN_NAME);
             logger.group(PLUGIN_NAME);
-            if (hostParams.length) {
+            if (hostParams.length && isWatchMode) {
                 Object.keys(compilation.assets)
                     .filter((key) => {
                     return ['.js', '.css', '.html', '.map'].includes(path__default['default'].extname(key));

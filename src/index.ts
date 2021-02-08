@@ -14,15 +14,17 @@ const PLUGIN_NAME = 'yylServer'
 
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
   /** 本地服务根目录 */
-  static: string
+  static?: string
   /** 本地服务端口 */
-  port: number
+  port?: number
   /** 是否启动热更新 */
-  hmr: boolean
+  hmr?: boolean
   /** 需要代理的域名 */
   proxy?: {
-    hosts: string[]
-    enable: boolean
+    /** 代理的 host 列表 */
+    hosts?: string[]
+    /** 是否激活 */
+    enable?: boolean
   }
   /** 构建成功后打开的页面 */
   homePage?: string
@@ -114,15 +116,16 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
 
   async apply(compiler: Compiler) {
     const { option } = this
-    const { options } = compiler
+    const { options, watchMode, watching } = compiler
     if (!option.enable) {
       return
     }
 
-    const hostParams = option.proxy.enable ? option.proxy.hosts.map((url) => formatHost(url)) : []
+    const iHosts = option?.proxy?.hosts || []
+
+    const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : []
 
     options.devServer = {
-      ...options.devServer,
       port: option.port,
       static: option.static,
       open: !!option.homePage,
@@ -157,14 +160,19 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
 
         return r
       })(),
-      useLocalIp: true
+      useLocalIp: true,
+      ...options.devServer
     }
 
+    let isWatchMode = false
+    compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
+      isWatchMode = true
+    })
     const { compilation, done } = await this.initCompilation(compiler)
     const iHooks = getHooks(compilation)
     const logger = compilation.getLogger(PLUGIN_NAME)
     logger.group(PLUGIN_NAME)
-    if (hostParams.length) {
+    if (hostParams.length && isWatchMode) {
       Object.keys(compilation.assets)
         .filter((key) => {
           return ['.js', '.css', '.html', '.map'].includes(path.extname(key))

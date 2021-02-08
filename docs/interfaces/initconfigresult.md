@@ -18,4 +18,4 @@
 
 • **devServer**: *undefined* \| DevServer
 
-Defined in: [src/index.ts:53](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L53)
+Defined in: [src/index.ts:55](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L55)

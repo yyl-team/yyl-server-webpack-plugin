@@ -48,7 +48,7 @@ Name | Type |
 
 **Returns:** [*default*](default.md)
 
-Defined in: [src/index.ts:76](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L76)
+Defined in: [src/index.ts:78](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L78)
 
 ## Properties
 
@@ -106,7 +106,7 @@ ___
 
 • **option**: *Required*<[*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md)\>
 
-Defined in: [src/index.ts:65](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L65)
+Defined in: [src/index.ts:67](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L67)
 
 ## Methods
 
@@ -140,7 +140,7 @@ Name | Type |
 
 **Returns:** *Promise*<*void*\>
 
-Defined in: [src/index.ts:115](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L115)
+Defined in: [src/index.ts:117](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L117)
 
 ___
 
@@ -230,7 +230,7 @@ Name | Type |
 
 **Returns:** *any*
 
-Defined in: [src/index.ts:57](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L57)
+Defined in: [src/index.ts:59](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L59)
 
 ___
 
@@ -240,4 +240,4 @@ ___
 
 **Returns:** *string*
 
-Defined in: [src/index.ts:61](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/d47dbbd/src/index.ts#L61)
+Defined in: [src/index.ts:63](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/70f800a/src/index.ts#L63)

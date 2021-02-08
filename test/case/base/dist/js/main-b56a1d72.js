@@ -1941,11 +1941,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 console.log('hello plugin');
-axios__WEBPACK_IMPORTED_MODULE_0___default().get('/proxy_www_yy_com/yyweb/module/data/header').then(rs => {
+axios__WEBPACK_IMPORTED_MODULE_0___default().get('//www.yy.com/yyweb/module/data/header').then(rs => {
   console.log(rs);
 });
-console.log('/proxy_www_yy_com/yyweb/module/data/header');
-console.log('/proxy_www_yy_com/yyweb/module/data/header');
+console.log('http://www.yy.com/yyweb/module/data/header');
+console.log('https://www.yy.com/yyweb/module/data/header');
 
 /***/ }),
 
