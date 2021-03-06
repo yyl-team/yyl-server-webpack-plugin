@@ -158,55 +158,58 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
     compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
       isWatchMode = true
     })
-    const { compilation, done } = await this.initCompilation(compiler)
-    const iHooks = getHooks(compilation)
-    const logger = compilation.getLogger(PLUGIN_NAME)
-    logger.group(PLUGIN_NAME)
-    if (hostParams.length && isWatchMode) {
-      Object.keys(compilation.assets)
-        .filter((key) => {
-          return ['.js', '.css', '.html', '.map'].includes(path.extname(key))
-        })
-        .forEach((key) => {
-          const asset = compilation.assets[key]
-          const replaceLogs: string[] = []
-          let r = asset.source().toString()
-          hostParams.forEach((hostObj) => {
-            ;[
-              `http://${hostObj.hostname}`,
-              `https://${hostObj.hostname}`,
-              `//${hostObj.hostname}`
-            ].forEach((mathPath) => {
-              if (r.match(mathPath)) {
-                replaceLogs.push(
-                  `> ${LANG.REPLACE}: ${chalk.yellow(mathPath)} -> ${chalk.cyan(
-                    hostObj.replaceStr
-                  )}`
-                )
-                r = r.split(mathPath).join(hostObj.replaceStr)
+    this.initCompilation({
+      compiler,
+      onProcessAssets: async (compilation) => {
+        const iHooks = getHooks(compilation)
+        const logger = compilation.getLogger(PLUGIN_NAME)
+        logger.group(PLUGIN_NAME)
+        if (hostParams.length && isWatchMode) {
+          Object.keys(compilation.assets)
+            .filter((key) => {
+              return ['.js', '.css', '.html', '.map'].includes(path.extname(key))
+            })
+            .forEach((key) => {
+              const asset = compilation.assets[key]
+              const replaceLogs: string[] = []
+              let r = asset.source().toString()
+              hostParams.forEach((hostObj) => {
+                ;[
+                  `http://${hostObj.hostname}`,
+                  `https://${hostObj.hostname}`,
+                  `//${hostObj.hostname}`
+                ].forEach((mathPath) => {
+                  if (r.match(mathPath)) {
+                    replaceLogs.push(
+                      `> ${LANG.REPLACE}: ${chalk.yellow(mathPath)} -> ${chalk.cyan(
+                        hostObj.replaceStr
+                      )}`
+                    )
+                    r = r.split(mathPath).join(hostObj.replaceStr)
+                  }
+                })
+              })
+
+              if (replaceLogs.length) {
+                logger.info(`${chalk.red('*')} ${LANG.UPDATE_FILE}: ${chalk.magenta(key)}`)
+                replaceLogs.forEach((str) => {
+                  logger.info(str)
+                })
+                this.updateAssets({
+                  compilation,
+                  assetsInfo: {
+                    dist: key,
+                    source: Buffer.from(r)
+                  }
+                })
               }
             })
-          })
+        }
 
-          if (replaceLogs.length) {
-            logger.info(`${chalk.red('*')} ${LANG.UPDATE_FILE}: ${chalk.magenta(key)}`)
-            replaceLogs.forEach((str) => {
-              logger.info(str)
-            })
-            this.updateAssets({
-              compilation,
-              assetsInfo: {
-                dist: key,
-                source: Buffer.from(r)
-              }
-            })
-          }
-        })
-    }
-
-    await iHooks.emit.promise()
-    logger.groupEnd()
-    done()
+        await iHooks.emit.promise()
+        logger.groupEnd()
+      }
+    })
   }
 }
 

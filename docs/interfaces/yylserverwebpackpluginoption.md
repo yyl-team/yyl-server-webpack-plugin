@@ -25,7 +25,7 @@
 
 • `Optional` **context**: *undefined* \| *string*
 
-Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:21
+Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:15
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 是否启动热更新
 
-Defined in: [src/index.ts:21](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L21)
+Defined in: src/index.ts:21
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 构建成功后打开的页面
 
-Defined in: [src/index.ts:30](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L30)
+Defined in: src/index.ts:30
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 本地服务端口
 
-Defined in: [src/index.ts:19](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L19)
+Defined in: src/index.ts:19
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 需要代理的域名
 
-Defined in: [src/index.ts:23](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L23)
+Defined in: src/index.ts:23
 
 ___
 
@@ -75,4 +75,4 @@ ___
 
 本地服务根目录
 
-Defined in: [src/index.ts:17](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L17)
+Defined in: src/index.ts:17

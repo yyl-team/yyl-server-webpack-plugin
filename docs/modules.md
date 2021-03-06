@@ -24,4 +24,4 @@
 
 Ƭ **YylServerWebpackPluginProperty**: *Required*<[*YylServerWebpackPluginOption*](interfaces/yylserverwebpackpluginoption.md)\>
 
-Defined in: [src/index.ts:33](https://github.com/jackness1208/yyl-server-webpack-plugin/blob/bb0cae6/src/index.ts#L33)
+Defined in: src/index.ts:33
