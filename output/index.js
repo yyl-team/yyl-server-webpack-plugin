@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.0.4
+ * yyl-server-webpack-plugin cjs 1.0.5
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -2024,49 +2024,52 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
                 isWatchMode = true;
             });
-            const { compilation, done } = yield this.initCompilation(compiler);
-            const iHooks = getHooks(compilation);
-            const logger = compilation.getLogger(PLUGIN_NAME);
-            logger.group(PLUGIN_NAME);
-            if (hostParams.length && isWatchMode) {
-                Object.keys(compilation.assets)
-                    .filter((key) => {
-                    return ['.js', '.css', '.html', '.map'].includes(path__default['default'].extname(key));
-                })
-                    .forEach((key) => {
-                    const asset = compilation.assets[key];
-                    const replaceLogs = [];
-                    let r = asset.source().toString();
-                    hostParams.forEach((hostObj) => {
-                        [
-                            `http://${hostObj.hostname}`,
-                            `https://${hostObj.hostname}`,
-                            `//${hostObj.hostname}`
-                        ].forEach((mathPath) => {
-                            if (r.match(mathPath)) {
-                                replaceLogs.push(`> ${LANG.REPLACE}: ${source.yellow(mathPath)} -> ${source.cyan(hostObj.replaceStr)}`);
-                                r = r.split(mathPath).join(hostObj.replaceStr);
-                            }
-                        });
-                    });
-                    if (replaceLogs.length) {
-                        logger.info(`${source.red('*')} ${LANG.UPDATE_FILE}: ${source.magenta(key)}`);
-                        replaceLogs.forEach((str) => {
-                            logger.info(str);
-                        });
-                        this.updateAssets({
-                            compilation,
-                            assetsInfo: {
-                                dist: key,
-                                source: Buffer.from(r)
+            this.initCompilation({
+                compiler,
+                onProcessAssets: (compilation) => __awaiter(this, void 0, void 0, function* () {
+                    const iHooks = getHooks(compilation);
+                    const logger = compilation.getLogger(PLUGIN_NAME);
+                    logger.group(PLUGIN_NAME);
+                    if (hostParams.length && isWatchMode) {
+                        Object.keys(compilation.assets)
+                            .filter((key) => {
+                            return ['.js', '.css', '.html', '.map'].includes(path__default['default'].extname(key));
+                        })
+                            .forEach((key) => {
+                            const asset = compilation.assets[key];
+                            const replaceLogs = [];
+                            let r = asset.source().toString();
+                            hostParams.forEach((hostObj) => {
+                                [
+                                    `http://${hostObj.hostname}`,
+                                    `https://${hostObj.hostname}`,
+                                    `//${hostObj.hostname}`
+                                ].forEach((mathPath) => {
+                                    if (r.match(mathPath)) {
+                                        replaceLogs.push(`> ${LANG.REPLACE}: ${source.yellow(mathPath)} -> ${source.cyan(hostObj.replaceStr)}`);
+                                        r = r.split(mathPath).join(hostObj.replaceStr);
+                                    }
+                                });
+                            });
+                            if (replaceLogs.length) {
+                                logger.info(`${source.red('*')} ${LANG.UPDATE_FILE}: ${source.magenta(key)}`);
+                                replaceLogs.forEach((str) => {
+                                    logger.info(str);
+                                });
+                                this.updateAssets({
+                                    compilation,
+                                    assetsInfo: {
+                                        dist: key,
+                                        source: Buffer.from(r)
+                                    }
+                                });
                             }
                         });
                     }
-                });
-            }
-            yield iHooks.emit.promise();
-            logger.groupEnd();
-            done();
+                    yield iHooks.emit.promise();
+                    logger.groupEnd();
+                })
+            });
         });
     }
 }

@@ -1927,28 +1927,6 @@ module.exports = function cssWithMappingToString(item) {
 
 /***/ }),
 
-/***/ "./src/entry/index/index.js":
-/*!**********************************!*\
-  !*** ./src/entry/index/index.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _index_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.css */ "./src/entry/index/index.css");
-
-
-console.log('hello plugin');
-axios__WEBPACK_IMPORTED_MODULE_0___default().get('//www.yy.com/yyweb/module/data/header').then(rs => {
-  console.log(rs);
-});
-console.log('http://www.yy.com/yyweb/module/data/header');
-console.log('https://www.yy.com/yyweb/module/data/header');
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/dist/cjs.js!./src/entry/index/index.css":
 /*!*************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./src/entry/index/index.css ***!
@@ -2352,10 +2330,27 @@ module.exports = function (list, options) {
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	// startup
-/******/ 	// Load entry module
-/******/ 	__webpack_require__("./src/entry/index/index.js");
-/******/ 	// This entry module used 'exports' so it can't be inlined
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!**********************************!*\
+  !*** ./src/entry/index/index.js ***!
+  \**********************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _index_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.css */ "./src/entry/index/index.css");
+
+
+console.log('hello plugin');
+axios__WEBPACK_IMPORTED_MODULE_0___default().get('//www.yy.com/yyweb/module/data/header').then(rs => {
+  console.log(rs);
+});
+console.log('http://www.yy.com/yyweb/module/data/header');
+console.log('https://www.yy.com/yyweb/module/data/header');
+})();
+
 /******/ })()
 ;
-//# sourceMappingURL=main-b56a1d72.js.map
+//# sourceMappingURL=main-74ab9d9f.js.map

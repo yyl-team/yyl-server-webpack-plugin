@@ -1,5 +1,9 @@
 # 版本变更
 
+## 1.0.5 (2021-03-07)
+
+- feat: 更新 `yyl-webpack-plugin-base@0.2.1`
+
 ## 1.0.4 (2021-02-08)
 
 - del: 去掉 `option.enable` 属性
