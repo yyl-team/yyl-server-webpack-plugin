@@ -280,6 +280,12 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
               }
             })
           }
+
+          if (options.devServer?.openPage) {
+            logger.info(
+              `${chalk.red('*')} ${LANG.HOME_PAGE}: ${chalk.yellow(options.devServer?.openPage)}`
+            )
+          }
         }
 
         if (hostParams.length && isWatchMode) {

@@ -1,5 +1,10 @@
 # 版本变更
 
+## 1.1.2 (2021-03-10)
+
+- feat: 补充 chalk
+- feat: 补全 homePage logs
+
 ## 1.1.1 (2021-03-10)
 
 - feat: 补全 homePage 逻辑

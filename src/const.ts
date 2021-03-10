@@ -5,5 +5,6 @@ export const LANG = {
   PORT_INFO: '端口',
   DIST_INFO: '目录',
   PROXY_INFO: '代理信息',
-  PROXY_DETAIL: '->'
+  PROXY_DETAIL: '->',
+  HOME_PAGE: '主页'
 }
