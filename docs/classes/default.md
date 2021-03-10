@@ -4,7 +4,7 @@
 
 ## Hierarchy
 
-* *YylWebpackPluginBase*
+- _YylWebpackPluginBase_
 
   ↳ **default**
 
@@ -37,15 +37,15 @@
 
 ### constructor
 
-\+ **new default**(`option?`: [*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md)): [*default*](default.md)
+\+ **new default**(`option?`: [_YylServerWebpackPluginOption_](../interfaces/yylserverwebpackpluginoption.md)): [_default_](default.md)
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`option?` | [*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md) |
+| Name      | Type                                                                            |
+| --------- | ------------------------------------------------------------------------------- |
+| `option?` | [_YylServerWebpackPluginOption_](../interfaces/yylserverwebpackpluginoption.md) |
 
-**Returns:** [*default*](default.md)
+**Returns:** [_default_](default.md)
 
 Defined in: src/index.ts:75
 
@@ -59,41 +59,41 @@ assetsMap
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:55
 
-___
+---
 
 ### context
 
-• **context**: *string*
+• **context**: _string_
 
 相对路径
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:49
 
-___
+---
 
 ### filename
 
-• **filename**: *string*
+• **filename**: _string_
 
 输出文件格式
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:53
 
-___
+---
 
 ### name
 
-• **name**: *string*
+• **name**: _string_
 
 组件名称
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:51
 
-___
+---
 
 ### option
 
-• **option**: *Required*<[*YylServerWebpackPluginOption*](../interfaces/yylserverwebpackpluginoption.md)\>
+• **option**: _Required_<[_YylServerWebpackPluginOption_](../interfaces/yylserverwebpackpluginoption.md)\>
 
 Defined in: src/index.ts:65
 
@@ -101,132 +101,132 @@ Defined in: src/index.ts:65
 
 ### addDependencies
 
-▸ **addDependencies**(`op`: AddDependenciesOption): *void*
+▸ **addDependencies**(`op`: AddDependenciesOption): _void_
 
 添加监听文件
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`op` | AddDependenciesOption |
+| Name | Type                  |
+| ---- | --------------------- |
+| `op` | AddDependenciesOption |
 
-**Returns:** *void*
+**Returns:** _void_
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:68
 
-___
+---
 
 ### apply
 
-▸ **apply**(`compiler`: *Compiler*): *Promise*<*void*\>
+▸ **apply**(`compiler`: _Compiler_): _Promise_<_void_\>
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`compiler` | *Compiler* |
+| Name       | Type       |
+| ---------- | ---------- |
+| `compiler` | _Compiler_ |
 
-**Returns:** *Promise*<*void*\>
+**Returns:** _Promise_<_void_\>
 
 Defined in: src/index.ts:110
 
-___
+---
 
 ### getFileName
 
-▸ **getFileName**(`name`: *string*, `cnt`: *Buffer*, `fname?`: *string*): *string*
+▸ **getFileName**(`name`: _string_, `cnt`: _Buffer_, `fname?`: _string_): _string_
 
 获取文件名称
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`name` | *string* |
-`cnt` | *Buffer* |
-`fname?` | *string* |
+| Name     | Type     |
+| -------- | -------- |
+| `name`   | _string_ |
+| `cnt`    | _Buffer_ |
+| `fname?` | _string_ |
 
-**Returns:** *string*
+**Returns:** _string_
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:60
 
-___
+---
 
 ### getFileType
 
-▸ **getFileType**(`str`: *string*): *string*
+▸ **getFileType**(`str`: _string_): _string_
 
 获取文件类型
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`str` | *string* |
+| Name  | Type     |
+| ----- | -------- |
+| `str` | _string_ |
 
-**Returns:** *string*
+**Returns:** _string_
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:58
 
-___
+---
 
 ### initCompilation
 
-▸ **initCompilation**(`op`: YylWebpackPluginBaseInitCompilationOption): *void*
+▸ **initCompilation**(`op`: YylWebpackPluginBaseInitCompilationOption): _void_
 
 初始化 compilation
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`op` | YylWebpackPluginBaseInitCompilationOption |
+| Name | Type                                      |
+| ---- | ----------------------------------------- |
+| `op` | YylWebpackPluginBaseInitCompilationOption |
 
-**Returns:** *void*
+**Returns:** _void_
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:62
 
-___
+---
 
 ### updateAssets
 
-▸ **updateAssets**(`op`: UpdateAssetsOption): *void*
+▸ **updateAssets**(`op`: UpdateAssetsOption): _void_
 
 更新 assets
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`op` | UpdateAssetsOption |
+| Name | Type               |
+| ---- | ------------------ |
+| `op` | UpdateAssetsOption |
 
-**Returns:** *void*
+**Returns:** _void_
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:66
 
-___
+---
 
 ### getHooks
 
-▸ `Static`**getHooks**(`compilation`: *Compilation*): *any*
+▸ `Static`**getHooks**(`compilation`: _Compilation_): _any_
 
 #### Parameters:
 
-Name | Type |
------- | ------ |
-`compilation` | *Compilation* |
+| Name          | Type          |
+| ------------- | ------------- |
+| `compilation` | _Compilation_ |
 
-**Returns:** *any*
+**Returns:** _any_
 
 Defined in: src/index.ts:57
 
-___
+---
 
 ### getName
 
-▸ `Static`**getName**(): *string*
+▸ `Static`**getName**(): _string_
 
-**Returns:** *string*
+**Returns:** _string_
 
 Defined in: src/index.ts:61

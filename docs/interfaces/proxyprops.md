@@ -4,7 +4,7 @@
 
 ## Hierarchy
 
-* **ProxyProps**
+- **ProxyProps**
 
 ## Table of contents
 
@@ -18,22 +18,22 @@
 
 ### changeOrigin
 
-• **changeOrigin**: *boolean*
+• **changeOrigin**: _boolean_
 
 Defined in: src/index.ts:37
 
-___
+---
 
 ### pathRewrite
 
-• **pathRewrite**: { [reg: string]: *string*;  }
+• **pathRewrite**: { [reg: string]: _string_; }
 
 Defined in: src/index.ts:38
 
-___
+---
 
 ### target
 
-• **target**: *string*
+• **target**: _string_
 
 Defined in: src/index.ts:36

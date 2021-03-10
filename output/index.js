@@ -1948,63 +1948,84 @@ function formatHost(url$1) {
         replaceStr: `/proxy_${hostname.replace(/\./g, '_')}`
     };
 }
+const DEFAULT_OPTIONS = {
+    context: process.cwd(),
+    devServer: {
+        noInfo: true,
+        port: 5000,
+        hot: false,
+        writeToDisk: false,
+        liveReload: false,
+        publicPath: '/',
+        disableHostCheck: true,
+        compress: true,
+        inline: true,
+        host: '0.0.0.0',
+        sockHost: '127.0.0.1',
+        serveIndex: true,
+        contentBase: path__default['default'].resolve(process.cwd(), './dist')
+    },
+    https: false,
+    homePage: '',
+    proxy: {
+        hosts: [],
+        enable: false
+    }
+};
+/** 插件 option 初始化 */
+function initPluginOption(op) {
+    var _a;
+    const option = Object.assign({}, DEFAULT_OPTIONS);
+    if (op === null || op === void 0 ? void 0 : op.context) {
+        option.context = op.context;
+    }
+    if (op === null || op === void 0 ? void 0 : op.proxy) {
+        option.proxy = Object.assign(Object.assign({}, option.proxy), op.proxy);
+    }
+    if (op === null || op === void 0 ? void 0 : op.homePage) {
+        option.homePage = op.homePage;
+    }
+    if ((_a = op === null || op === void 0 ? void 0 : op.devServer) === null || _a === void 0 ? void 0 : _a.publicPath) {
+        option.devServer.publicPath = op.devServer.publicPath;
+        if (/^\/\//.test(option.devServer.publicPath)) {
+            option.devServer.publicPath = `http:${option.devServer.publicPath}`;
+        }
+    }
+    if ((op === null || op === void 0 ? void 0 : op.https) !== undefined) {
+        option.devServer.inline = !op.https;
+    }
+    return option;
+}
+/** 初始化 devServer plugin */
 class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
     constructor(option) {
         super(Object.assign(Object.assign({}, option), { name: PLUGIN_NAME }));
-        this.option = {
-            context: process.cwd(),
-            homePage: '',
-            port: 5000,
-            hmr: true,
-            static: path__default['default'].resolve(process.cwd(), './dist'),
-            proxy: {
-                hosts: [],
-                enable: false
-            }
-        };
-        if (option === null || option === void 0 ? void 0 : option.port) {
-            this.option.port = option.port;
-        }
-        if (option === null || option === void 0 ? void 0 : option.context) {
-            this.option.context = option.context;
-        }
-        if (option === null || option === void 0 ? void 0 : option.static) {
-            this.option.static = path__default['default'].resolve(this.option.context, option.static);
-        }
-        if (option === null || option === void 0 ? void 0 : option.proxy) {
-            this.option.proxy = Object.assign(Object.assign({}, this.option.proxy), option.proxy);
-        }
-        if (option === null || option === void 0 ? void 0 : option.homePage) {
-            this.option.homePage = option.homePage;
-        }
-        if ((option === null || option === void 0 ? void 0 : option.hmr) !== undefined) {
-            this.option.hmr = option.hmr;
-        }
+        this.option = DEFAULT_OPTIONS;
+        this.option = initPluginOption(option);
     }
-    static getHooks(compilation) {
-        return getHooks(compilation);
-    }
-    static getName() {
-        return PLUGIN_NAME;
-    }
-    apply(compiler) {
+    /** devServer 配置初始化 */
+    static initDevServerConfig(op) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const { option } = this;
-            const { options } = compiler;
-            const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
-            const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
-            options.devServer = Object.assign({ port: option.port, static: option.static, open: !!option.homePage, openPage: option.homePage, headers: (() => {
+        const option = initPluginOption(op);
+        const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
+        const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
+        return {
+            devServer: Object.assign(Object.assign({}, option.devServer), { headers: (() => {
+                    let r = {};
                     if (option.proxy.enable) {
-                        return {
+                        r = {
                             'Access-Control-Allow-Origin': '*',
                             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
                             'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
                         };
                     }
                     else {
-                        return {};
+                        r = {};
                     }
+                    if (option.devServer.headers) {
+                        r = Object.assign(Object.assign({}, r), option.devServer.headers);
+                    }
+                    return r;
                 })(), proxy: (() => {
                     const r = {};
                     hostParams.forEach((hostObj) => {
@@ -2019,7 +2040,45 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                         };
                     });
                     return r;
-                })(), useLocalIp: true }, options.devServer);
+                })(), before: (app, server, compiler) => {
+                    const { historyApiFallback } = option.devServer;
+                    if (historyApiFallback && historyApiFallback !== true) {
+                        /**
+                         * 由于 proxy 后通过域名访问 404 页面无法正确重定向，
+                         * 通过 添加 header.accept, 跳过 historyApiFallback 前置校验
+                         *  */
+                        app.use((req, res, next) => {
+                            const matchRewrite = historyApiFallback.rewrites &&
+                                historyApiFallback.rewrites.length &&
+                                historyApiFallback.rewrites.some((item) => req.url.match(item.from));
+                            if (req.method === 'GET' &&
+                                req.headers &&
+                                ([''].includes(path__default['default'].extname(req.url)) || matchRewrite)) {
+                                req.headers.accept =
+                                    'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9';
+                            }
+                            next();
+                        });
+                    }
+                    if (option.devServer.before) {
+                        option.devServer.before(app, server, compiler);
+                    }
+                } })
+        };
+    }
+    static getHooks(compilation) {
+        return getHooks(compilation);
+    }
+    static getName() {
+        return PLUGIN_NAME;
+    }
+    /** proxy 操作 页面的 url 替换 */
+    apply(compiler) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const { option } = this;
+            const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
+            const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
             let isWatchMode = false;
             compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
                 isWatchMode = true;

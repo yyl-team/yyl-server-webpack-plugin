@@ -64,7 +64,12 @@ const wConfig = merge({
       chunks: 'all'
     }),
     new IPlugin(iPluginOption)
-  ]
+  ],
+  devServer: {
+    writeToDisk: true,
+    contentBase: path.join(__dirname, './dist'),
+    port: 5000
+  }
 })
 
 module.exports = wConfig

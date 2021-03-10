@@ -4,7 +4,7 @@
 
 ## Hierarchy
 
-* *Pick*<YylWebpackPluginBaseOption, *context*\>
+- _Pick_<YylWebpackPluginBaseOption, _context_\>
 
   ↳ **YylServerWebpackPluginOption**
 
@@ -23,55 +23,55 @@
 
 ### context
 
-• `Optional` **context**: *undefined* \| *string*
+• `Optional` **context**: _undefined_ \| _string_
 
 Defined in: node_modules/yyl-webpack-plugin-base/output/index.d.ts:15
 
-___
+---
 
 ### hmr
 
-• `Optional` **hmr**: *undefined* \| *boolean*
+• `Optional` **hmr**: _undefined_ \| _boolean_
 
 是否启动热更新
 
 Defined in: src/index.ts:21
 
-___
+---
 
 ### homePage
 
-• `Optional` **homePage**: *undefined* \| *string*
+• `Optional` **homePage**: _undefined_ \| _string_
 
 构建成功后打开的页面
 
 Defined in: src/index.ts:30
 
-___
+---
 
 ### port
 
-• `Optional` **port**: *undefined* \| *number*
+• `Optional` **port**: _undefined_ \| _number_
 
 本地服务端口
 
 Defined in: src/index.ts:19
 
-___
+---
 
 ### proxy
 
-• `Optional` **proxy**: *undefined* \| { `enable?`: *undefined* \| *boolean* ; `hosts?`: *undefined* \| *string*[]  }
+• `Optional` **proxy**: _undefined_ \| { `enable?`: _undefined_ \| _boolean_ ; `hosts?`: _undefined_ \| _string_[] }
 
 需要代理的域名
 
 Defined in: src/index.ts:23
 
-___
+---
 
 ### static
 
-• `Optional` **static**: *undefined* \| *string*
+• `Optional` **static**: _undefined_ \| _string_
 
 本地服务根目录
 

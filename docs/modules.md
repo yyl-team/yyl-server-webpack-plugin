@@ -22,6 +22,6 @@
 
 ### YylServerWebpackPluginProperty
 
-Ƭ **YylServerWebpackPluginProperty**: *Required*<[*YylServerWebpackPluginOption*](interfaces/yylserverwebpackpluginoption.md)\>
+Ƭ **YylServerWebpackPluginProperty**: _Required_<[_YylServerWebpackPluginOption_](interfaces/yylserverwebpackpluginoption.md)\>
 
 Defined in: src/index.ts:33

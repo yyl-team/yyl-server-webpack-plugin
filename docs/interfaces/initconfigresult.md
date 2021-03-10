@@ -4,7 +4,7 @@
 
 ## Hierarchy
 
-* **InitConfigResult**
+- **InitConfigResult**
 
 ## Table of contents
 
@@ -16,6 +16,6 @@
 
 ### devServer
 
-• **devServer**: *undefined* \| DevServer
+• **devServer**: _undefined_ \| DevServer
 
 Defined in: src/index.ts:53
