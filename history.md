@@ -1,5 +1,10 @@
 # 版本变更
 
+## 1.1.0 (*)
+
+- feat: 降级 `yyl-dev-server` 到 3.5.2
+- feat: 补全 devServer 逻辑
+
 ## 1.0.5 (2021-03-07)
 
 - feat: 更新 `yyl-webpack-plugin-base@0.2.1`
