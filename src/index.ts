@@ -93,10 +93,6 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
     }
   }
 
-  if (op?.homePage) {
-    option.homePage = op.homePage
-  }
-
   if (op?.devServer) {
     option.devServer = {
       ...option.devServer,
@@ -111,12 +107,22 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
     }
   }
 
+  if (typeof op?.devServer?.contentBase === 'string') {
+    option.devServer.contentBase = path.resolve(option.context, op.devServer.contentBase)
+  }
+
   if (op?.https !== undefined) {
     option.devServer.inline = !op.https
   }
 
   if (op?.logger) {
     option.logger = op.logger
+  }
+
+  if (op?.homePage) {
+    option.homePage = op.homePage
+    option.devServer.open = true
+    option.devServer.openPage = op.homePage
   }
 
   return option
