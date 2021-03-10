@@ -7,4 +7,6 @@ export declare const LANG: {
     PROXY_INFO: string;
     PROXY_DETAIL: string;
     HOME_PAGE: string;
+    REPLACE_INFO: string;
+    REPLACE_NONE: string;
 };

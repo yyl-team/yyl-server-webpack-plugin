@@ -1,6 +1,7 @@
 import { Compiler, Compilation } from 'webpack';
 import { Configuration } from 'webpack-dev-server';
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 export declare type LoggerType = 'warn' | 'info' | 'success' | 'warn' | 'error';
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
     devServer?: Configuration;
@@ -15,10 +16,12 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
     };
     /** 构建成功后打开的页面 */
     homePage?: string;
-    /** 日志监听 */
-    logger?: (type: LoggerType, args: any[]) => any;
+    /** html-webpack-plugin 插件 */
+    HtmlWebpackPlugin?: typeof HtmlWebpackPlugin;
 }
-export declare type YylServerWebpackPluginProperty = Required<YylServerWebpackPluginOption>;
+export declare type YylServerWebpackPluginProperty = Required<Omit<YylServerWebpackPluginOption, 'HtmlWebpackPlugin'>> & {
+    HtmlWebpackPlugin?: typeof HtmlWebpackPlugin;
+};
 export interface ProxyProps {
     target: string;
     changeOrigin: boolean;

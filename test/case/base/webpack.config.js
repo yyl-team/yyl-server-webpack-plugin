@@ -18,7 +18,8 @@ const iPluginOption = {
   proxy: {
     enable: true,
     hosts: ['//www.yy.com']
-  }
+  },
+  HtmlWebpackPlugin
 }
 // - plugin options
 

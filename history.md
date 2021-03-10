@@ -1,5 +1,9 @@
 # 版本变更
 
+## 1.1.4 (2021-03-11)
+
+- feat: 适配 html-webpack-plugin hooks
+
 ## 1.1.3 (2021-03-10)
 
 - feat: 調整 devServer.before 邏輯
