@@ -105,21 +105,34 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
   return option
 }
 
+export interface InitDevServerConfigLog {
+  type: 'info' | 'warn' | 'error'
+  args: any[]
+}
+
 /** devServer 配置初始化 - 返回 */
 export interface initDevServerResult {
   devServer: Configuration
+  logs: InitDevServerConfigLog[]
 }
 
 /** 初始化 devServer plugin */
 export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
+  cacheLogs: InitDevServerConfigLog[] = []
+
   /** devServer 配置初始化 */
   static initDevServerConfig(op?: YylServerWebpackPluginOption): initDevServerResult {
     const option = initPluginOption(op)
+    const logs: InitDevServerConfigLog[] = []
 
     const iHosts = option?.proxy?.hosts || []
     const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : []
 
-    return {
+    if (option.devServer.proxy) {
+      // TODO: throw warning this attr is not working
+    }
+
+    const r: initDevServerResult = {
       devServer: {
         ...option.devServer,
         headers: (() => {
@@ -188,8 +201,13 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
             option.devServer.before(app, server, compiler)
           }
         }
-      }
+      },
+      logs
     }
+
+    // TODO: throw base info
+
+    return r
   }
 
   static getHooks(compilation: Compilation) {
