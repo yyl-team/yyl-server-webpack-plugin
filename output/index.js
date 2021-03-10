@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.1.0
+ * yyl-server-webpack-plugin cjs 1.1.1
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -1980,16 +1980,13 @@ const DEFAULT_OPTIONS = {
 };
 /** 插件 option 初始化 */
 function initPluginOption(op) {
-    var _a;
+    var _a, _b;
     const option = Object.assign({}, DEFAULT_OPTIONS);
     if (op === null || op === void 0 ? void 0 : op.context) {
         option.context = op.context;
     }
     if (op === null || op === void 0 ? void 0 : op.proxy) {
         option.proxy = Object.assign(Object.assign({}, option.proxy), op.proxy);
-    }
-    if (op === null || op === void 0 ? void 0 : op.homePage) {
-        option.homePage = op.homePage;
     }
     if (op === null || op === void 0 ? void 0 : op.devServer) {
         option.devServer = Object.assign(Object.assign({}, option.devServer), op.devServer);
@@ -2000,11 +1997,19 @@ function initPluginOption(op) {
             option.devServer.publicPath = `http:${option.devServer.publicPath}`;
         }
     }
+    if (typeof ((_b = op === null || op === void 0 ? void 0 : op.devServer) === null || _b === void 0 ? void 0 : _b.contentBase) === 'string') {
+        option.devServer.contentBase = path__default['default'].resolve(option.context, op.devServer.contentBase);
+    }
     if ((op === null || op === void 0 ? void 0 : op.https) !== undefined) {
         option.devServer.inline = !op.https;
     }
     if (op === null || op === void 0 ? void 0 : op.logger) {
         option.logger = op.logger;
+    }
+    if (op === null || op === void 0 ? void 0 : op.homePage) {
+        option.homePage = op.homePage;
+        option.devServer.open = true;
+        option.devServer.openPage = op.homePage;
     }
     return option;
 }
