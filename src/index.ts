@@ -4,6 +4,7 @@ import { Configuration, ProxyConfigMap } from 'webpack-dev-server'
 import { getHooks } from './hooks'
 import chalk from 'chalk'
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { URL } from 'url'
 import { LANG } from './const'
 
@@ -27,11 +28,15 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
   /** 构建成功后打开的页面 */
   homePage?: string
 
-  /** 日志监听 */
-  logger?: (type: LoggerType, args: any[]) => any
+  /** html-webpack-plugin 插件 */
+  HtmlWebpackPlugin?: typeof HtmlWebpackPlugin
 }
 
-export type YylServerWebpackPluginProperty = Required<YylServerWebpackPluginOption>
+export type YylServerWebpackPluginProperty = Required<
+  Omit<YylServerWebpackPluginOption, 'HtmlWebpackPlugin'>
+> & {
+  HtmlWebpackPlugin?: typeof HtmlWebpackPlugin
+}
 
 export interface ProxyProps {
   target: string
@@ -69,7 +74,7 @@ const DEFAULT_OPTIONS: YylServerWebpackPluginProperty = {
   },
   https: false,
   homePage: '',
-  logger: () => undefined,
+  HtmlWebpackPlugin,
   proxy: {
     hosts: [],
     enable: false
@@ -115,14 +120,14 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
     option.devServer.inline = !op.https
   }
 
-  if (op?.logger) {
-    option.logger = op.logger
-  }
-
   if (op?.homePage) {
     option.homePage = op.homePage
     option.devServer.open = true
     option.devServer.openPage = op.homePage
+  }
+
+  if (op?.HtmlWebpackPlugin) {
+    option.HtmlWebpackPlugin = op.HtmlWebpackPlugin
   }
 
   return option
@@ -136,10 +141,6 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
 
     const iHosts = option?.proxy?.hosts || []
     const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : []
-
-    if (option.devServer.proxy && typeof option.devServer.proxy !== 'object') {
-      option.logger('warn', [LANG.PROXY_IS_NOT_OBJECT])
-    }
 
     const r: Configuration = {
       ...option.devServer,
@@ -251,10 +252,64 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
 
     const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : []
 
+    let changed = false
+
+    const replaceHandle = (
+      ctx: string
+    ): {
+      content: string
+      replaceLogs: string[]
+    } => {
+      let content = ctx
+      const replaceLogs: string[] = []
+      hostParams.forEach((hostObj) => {
+        ;[
+          `http://${hostObj.hostname}`,
+          `https://${hostObj.hostname}`,
+          `//${hostObj.hostname}`
+        ].forEach((mathPath) => {
+          if (content.match(mathPath)) {
+            replaceLogs.push(`${LANG.REPLACE}: ${mathPath} -> ${chalk.cyan(hostObj.replaceStr)}`)
+            content = content.split(mathPath).join(hostObj.replaceStr)
+          }
+        })
+      })
+
+      return {
+        content,
+        replaceLogs
+      }
+    }
+
     let isWatchMode = false
     compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
       isWatchMode = true
     })
+
+    // html-webpack-config
+    const { HtmlWebpackPlugin } = option
+    if (HtmlWebpackPlugin) {
+      compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+        const logger = compilation.getLogger(PLUGIN_NAME)
+        HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(
+          PLUGIN_NAME,
+          async (info, cb) => {
+            const { content, replaceLogs } = replaceHandle(info.html)
+
+            if (replaceLogs.length) {
+              changed = true
+              logger.info(`${LANG.UPDATE_FILE}: ${chalk.magenta(info.outputName)}`)
+              replaceLogs.forEach((str) => {
+                logger.info(str)
+              })
+              info.html = content
+            }
+            cb(null, info)
+          }
+        )
+      })
+    }
+
     this.initCompilation({
       compiler,
       onProcessAssets: async (compilation) => {
@@ -263,61 +318,44 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
         logger.group(PLUGIN_NAME)
 
         if (options.devServer) {
+          logger.info(`${chalk.yellow(LANG.PORT_INFO)}: ${chalk.cyan(options.devServer.port)}`)
           logger.info(
-            `${chalk.red('*')} ${LANG.PORT_INFO}: ${chalk.yellow(options.devServer.port)}`
-          )
-          logger.info(
-            `${chalk.red('*')} ${LANG.DIST_INFO}: ${chalk.yellow(options.devServer.contentBase)}`
+            `${chalk.yellow(LANG.DIST_INFO)}: ${chalk.cyan(options.devServer.contentBase)}`
           )
 
           if (options.devServer?.proxy) {
-            logger.info(`${chalk.red('*')} ${LANG.PROXY_INFO}:`)
+            logger.info(`${chalk.yellow(LANG.PROXY_INFO)}:`)
             const iProxy = options.devServer?.proxy as ProxyConfigMap
             Object.keys(iProxy).forEach((key: keyof ProxyConfigMap) => {
               const proxyInfo = iProxy[key]
               if (typeof proxyInfo === 'string') {
-                logger.info(`> ${chalk.yellow(key)} -> ${proxyInfo}`)
+                logger.info(`${key} -> ${chalk.cyan(proxyInfo)}`)
               } else {
-                logger.info(`> ${chalk.yellow(key)} -> ${proxyInfo.target}`)
+                logger.info(`${key} -> ${chalk.cyan(proxyInfo.target)}`)
               }
             })
           }
 
           if (options.devServer?.openPage) {
             logger.info(
-              `${chalk.red('*')} ${LANG.HOME_PAGE}: ${chalk.yellow(options.devServer?.openPage)}`
+              `${chalk.yellow(LANG.HOME_PAGE)}: ${chalk.cyan(options.devServer?.openPage)}`
             )
           }
         }
 
         if (hostParams.length && isWatchMode) {
+          logger.info(`${chalk.yellow(LANG.REPLACE_INFO)}:`)
           Object.keys(compilation.assets)
             .filter((key) => {
               return ['.js', '.css', '.html', '.map'].includes(path.extname(key))
             })
             .forEach((key) => {
               const asset = compilation.assets[key]
-              const replaceLogs: string[] = []
-              let r = asset.source().toString()
-              hostParams.forEach((hostObj) => {
-                ;[
-                  `http://${hostObj.hostname}`,
-                  `https://${hostObj.hostname}`,
-                  `//${hostObj.hostname}`
-                ].forEach((mathPath) => {
-                  if (r.match(mathPath)) {
-                    replaceLogs.push(
-                      `> ${LANG.REPLACE}: ${chalk.yellow(mathPath)} -> ${chalk.cyan(
-                        hostObj.replaceStr
-                      )}`
-                    )
-                    r = r.split(mathPath).join(hostObj.replaceStr)
-                  }
-                })
-              })
+              const { content, replaceLogs } = replaceHandle(asset.source().toString())
 
               if (replaceLogs.length) {
-                logger.info(`${chalk.red('*')} ${LANG.UPDATE_FILE}: ${chalk.magenta(key)}`)
+                changed = true
+                logger.info(`${LANG.UPDATE_FILE}: ${chalk.magenta(key)}`)
                 replaceLogs.forEach((str) => {
                   logger.info(str)
                 })
@@ -325,11 +363,15 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
                   compilation,
                   assetsInfo: {
                     dist: key,
-                    source: Buffer.from(r)
+                    source: Buffer.from(content)
                   }
                 })
               }
             })
+
+          if (!changed) {
+            logger.info(chalk.gray(LANG.REPLACE_NONE))
+          }
         }
 
         await iHooks.emit.promise()

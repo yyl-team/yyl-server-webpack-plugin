@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.1.3
+ * yyl-server-webpack-plugin cjs 1.1.4
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -11,12 +11,14 @@ var path = require('path');
 var tapable = require('tapable');
 var chalk = require('chalk');
 var yylWebpackPluginBase = require('yyl-webpack-plugin-base');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var url = require('url');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 var chalk__default = /*#__PURE__*/_interopDefaultLegacy(chalk);
+var HtmlWebpackPlugin__default = /*#__PURE__*/_interopDefaultLegacy(HtmlWebpackPlugin);
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -66,7 +68,9 @@ const LANG = {
     DIST_INFO: '目录',
     PROXY_INFO: '代理信息',
     PROXY_DETAIL: '->',
-    HOME_PAGE: '主页'
+    HOME_PAGE: '主页',
+    REPLACE_INFO: '文件替換',
+    REPLACE_NONE: '暂无'
 };
 
 const PLUGIN_NAME = 'yylServer';
@@ -97,7 +101,7 @@ const DEFAULT_OPTIONS = {
     },
     https: false,
     homePage: '',
-    logger: () => undefined,
+    HtmlWebpackPlugin: HtmlWebpackPlugin__default['default'],
     proxy: {
         hosts: [],
         enable: false
@@ -128,13 +132,13 @@ function initPluginOption(op) {
     if ((op === null || op === void 0 ? void 0 : op.https) !== undefined) {
         option.devServer.inline = !op.https;
     }
-    if (op === null || op === void 0 ? void 0 : op.logger) {
-        option.logger = op.logger;
-    }
     if (op === null || op === void 0 ? void 0 : op.homePage) {
         option.homePage = op.homePage;
         option.devServer.open = true;
         option.devServer.openPage = op.homePage;
+    }
+    if (op === null || op === void 0 ? void 0 : op.HtmlWebpackPlugin) {
+        option.HtmlWebpackPlugin = op.HtmlWebpackPlugin;
     }
     return option;
 }
@@ -151,9 +155,6 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         const option = initPluginOption(op);
         const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
         const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
-        if (option.devServer.proxy && typeof option.devServer.proxy !== 'object') {
-            option.logger('warn', [LANG.PROXY_IS_NOT_OBJECT]);
-        }
         const r = Object.assign(Object.assign({}, option.devServer), { headers: (() => {
                 let r = {};
                 if (option.proxy.enable) {
@@ -233,10 +234,50 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             const { options } = compiler;
             const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
             const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
+            let changed = false;
+            const replaceHandle = (ctx) => {
+                let content = ctx;
+                const replaceLogs = [];
+                hostParams.forEach((hostObj) => {
+                    [
+                        `http://${hostObj.hostname}`,
+                        `https://${hostObj.hostname}`,
+                        `//${hostObj.hostname}`
+                    ].forEach((mathPath) => {
+                        if (content.match(mathPath)) {
+                            replaceLogs.push(`${LANG.REPLACE}: ${mathPath} -> ${chalk__default['default'].cyan(hostObj.replaceStr)}`);
+                            content = content.split(mathPath).join(hostObj.replaceStr);
+                        }
+                    });
+                });
+                return {
+                    content,
+                    replaceLogs
+                };
+            };
             let isWatchMode = false;
             compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
                 isWatchMode = true;
             });
+            // html-webpack-config
+            const { HtmlWebpackPlugin } = option;
+            if (HtmlWebpackPlugin) {
+                compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+                    const logger = compilation.getLogger(PLUGIN_NAME);
+                    HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(PLUGIN_NAME, (info, cb) => __awaiter(this, void 0, void 0, function* () {
+                        const { content, replaceLogs } = replaceHandle(info.html);
+                        if (replaceLogs.length) {
+                            changed = true;
+                            logger.info(`${LANG.UPDATE_FILE}: ${chalk__default['default'].magenta(info.outputName)}`);
+                            replaceLogs.forEach((str) => {
+                                logger.info(str);
+                            });
+                            info.html = content;
+                        }
+                        cb(null, info);
+                    }));
+                });
+            }
             this.initCompilation({
                 compiler,
                 onProcessAssets: (compilation) => __awaiter(this, void 0, void 0, function* () {
@@ -245,48 +286,37 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                     const logger = compilation.getLogger(PLUGIN_NAME);
                     logger.group(PLUGIN_NAME);
                     if (options.devServer) {
-                        logger.info(`${chalk__default['default'].red('*')} ${LANG.PORT_INFO}: ${chalk__default['default'].yellow(options.devServer.port)}`);
-                        logger.info(`${chalk__default['default'].red('*')} ${LANG.DIST_INFO}: ${chalk__default['default'].yellow(options.devServer.contentBase)}`);
+                        logger.info(`${chalk__default['default'].yellow(LANG.PORT_INFO)}: ${chalk__default['default'].cyan(options.devServer.port)}`);
+                        logger.info(`${chalk__default['default'].yellow(LANG.DIST_INFO)}: ${chalk__default['default'].cyan(options.devServer.contentBase)}`);
                         if ((_b = options.devServer) === null || _b === void 0 ? void 0 : _b.proxy) {
-                            logger.info(`${chalk__default['default'].red('*')} ${LANG.PROXY_INFO}:`);
+                            logger.info(`${chalk__default['default'].yellow(LANG.PROXY_INFO)}:`);
                             const iProxy = (_c = options.devServer) === null || _c === void 0 ? void 0 : _c.proxy;
                             Object.keys(iProxy).forEach((key) => {
                                 const proxyInfo = iProxy[key];
                                 if (typeof proxyInfo === 'string') {
-                                    logger.info(`> ${chalk__default['default'].yellow(key)} -> ${proxyInfo}`);
+                                    logger.info(`${key} -> ${chalk__default['default'].cyan(proxyInfo)}`);
                                 }
                                 else {
-                                    logger.info(`> ${chalk__default['default'].yellow(key)} -> ${proxyInfo.target}`);
+                                    logger.info(`${key} -> ${chalk__default['default'].cyan(proxyInfo.target)}`);
                                 }
                             });
                         }
                         if ((_d = options.devServer) === null || _d === void 0 ? void 0 : _d.openPage) {
-                            logger.info(`${chalk__default['default'].red('*')} ${LANG.HOME_PAGE}: ${chalk__default['default'].yellow((_e = options.devServer) === null || _e === void 0 ? void 0 : _e.openPage)}`);
+                            logger.info(`${chalk__default['default'].yellow(LANG.HOME_PAGE)}: ${chalk__default['default'].cyan((_e = options.devServer) === null || _e === void 0 ? void 0 : _e.openPage)}`);
                         }
                     }
                     if (hostParams.length && isWatchMode) {
+                        logger.info(`${chalk__default['default'].yellow(LANG.REPLACE_INFO)}:`);
                         Object.keys(compilation.assets)
                             .filter((key) => {
                             return ['.js', '.css', '.html', '.map'].includes(path__default['default'].extname(key));
                         })
                             .forEach((key) => {
                             const asset = compilation.assets[key];
-                            const replaceLogs = [];
-                            let r = asset.source().toString();
-                            hostParams.forEach((hostObj) => {
-                                [
-                                    `http://${hostObj.hostname}`,
-                                    `https://${hostObj.hostname}`,
-                                    `//${hostObj.hostname}`
-                                ].forEach((mathPath) => {
-                                    if (r.match(mathPath)) {
-                                        replaceLogs.push(`> ${LANG.REPLACE}: ${chalk__default['default'].yellow(mathPath)} -> ${chalk__default['default'].cyan(hostObj.replaceStr)}`);
-                                        r = r.split(mathPath).join(hostObj.replaceStr);
-                                    }
-                                });
-                            });
+                            const { content, replaceLogs } = replaceHandle(asset.source().toString());
                             if (replaceLogs.length) {
-                                logger.info(`${chalk__default['default'].red('*')} ${LANG.UPDATE_FILE}: ${chalk__default['default'].magenta(key)}`);
+                                changed = true;
+                                logger.info(`${LANG.UPDATE_FILE}: ${chalk__default['default'].magenta(key)}`);
                                 replaceLogs.forEach((str) => {
                                     logger.info(str);
                                 });
@@ -294,11 +324,14 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                                     compilation,
                                     assetsInfo: {
                                         dist: key,
-                                        source: Buffer.from(r)
+                                        source: Buffer.from(content)
                                     }
                                 });
                             }
                         });
+                        if (!changed) {
+                            logger.info(chalk__default['default'].gray(LANG.REPLACE_NONE));
+                        }
                     }
                     yield iHooks.emit.promise();
                     logger.groupEnd();
