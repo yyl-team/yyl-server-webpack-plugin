@@ -191,7 +191,9 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
         return r
       })(),
       before: (app, server, compiler) => {
-        const { historyApiFallback } = option.devServer
+        const historyApiFallback = compiler.options.devServer
+          ?.historyApiFallback as Configuration['historyApiFallback']
+
         if (historyApiFallback && historyApiFallback !== true) {
           /**
            * 由于 proxy 后通过域名访问 404 页面无法正确重定向，

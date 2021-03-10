@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.1.2
+ * yyl-server-webpack-plugin cjs 1.1.3
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -193,7 +193,8 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                 }
                 return r;
             })(), before: (app, server, compiler) => {
-                const { historyApiFallback } = option.devServer;
+                var _a;
+                const historyApiFallback = (_a = compiler.options.devServer) === null || _a === void 0 ? void 0 : _a.historyApiFallback;
                 if (historyApiFallback && historyApiFallback !== true) {
                     /**
                      * 由于 proxy 后通过域名访问 404 页面无法正确重定向，
