@@ -1,13 +1,15 @@
 import path from 'path'
-import { Compiler, Compilation, LoaderOptionsPlugin } from 'webpack'
-import { Configuration } from 'webpack-dev-server'
+import { Compiler, Compilation } from 'webpack'
+import { Configuration, ProxyConfigMap } from 'webpack-dev-server'
 import { getHooks } from './hooks'
 import chalk from 'chalk'
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base'
 import { URL } from 'url'
-import { LANG } from './lang'
+import { LANG } from './const'
 
 const PLUGIN_NAME = 'yylServer'
+
+export type LoggerType = 'warn' | 'info' | 'success' | 'warn' | 'error'
 
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
   devServer?: Configuration
@@ -24,6 +26,9 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
   }
   /** 构建成功后打开的页面 */
   homePage?: string
+
+  /** 日志监听 */
+  logger?: (type: LoggerType, args: any[]) => any
 }
 
 export type YylServerWebpackPluginProperty = Required<YylServerWebpackPluginOption>
@@ -64,6 +69,7 @@ const DEFAULT_OPTIONS: YylServerWebpackPluginProperty = {
   },
   https: false,
   homePage: '',
+  logger: () => undefined,
   proxy: {
     hosts: [],
     enable: false
@@ -91,6 +97,13 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
     option.homePage = op.homePage
   }
 
+  if (op?.devServer) {
+    option.devServer = {
+      ...option.devServer,
+      ...op.devServer
+    }
+  }
+
   if (op?.devServer?.publicPath) {
     option.devServer.publicPath = op.devServer.publicPath
     if (/^\/\//.test(option.devServer.publicPath)) {
@@ -102,110 +115,103 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
     option.devServer.inline = !op.https
   }
 
+  if (op?.logger) {
+    option.logger = op.logger
+  }
+
   return option
-}
-
-export interface InitDevServerConfigLog {
-  type: 'info' | 'warn' | 'error'
-  args: any[]
-}
-
-/** devServer 配置初始化 - 返回 */
-export interface initDevServerResult {
-  devServer: Configuration
-  logs: InitDevServerConfigLog[]
 }
 
 /** 初始化 devServer plugin */
 export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
-  cacheLogs: InitDevServerConfigLog[] = []
-
   /** devServer 配置初始化 */
-  static initDevServerConfig(op?: YylServerWebpackPluginOption): initDevServerResult {
+  static initDevServerConfig(op?: YylServerWebpackPluginOption): Configuration {
     const option = initPluginOption(op)
-    const logs: InitDevServerConfigLog[] = []
 
     const iHosts = option?.proxy?.hosts || []
     const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : []
 
-    if (option.devServer.proxy) {
-      // TODO: throw warning this attr is not working
+    if (option.devServer.proxy && typeof option.devServer.proxy !== 'object') {
+      option.logger('warn', [LANG.PROXY_IS_NOT_OBJECT])
     }
 
-    const r: initDevServerResult = {
-      devServer: {
-        ...option.devServer,
-        headers: (() => {
-          let r: Configuration['headers'] = {}
-          if (option.proxy.enable) {
-            r = {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-              'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
-            }
-          } else {
-            r = {}
+    const r: Configuration = {
+      ...option.devServer,
+      headers: (() => {
+        let r: Configuration['headers'] = {}
+        if (option.proxy.enable) {
+          r = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+            'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
           }
+        } else {
+          r = {}
+        }
 
-          if (option.devServer.headers) {
-            r = {
-              ...r,
-              ...option.devServer.headers
-            }
-          }
-          return r
-        })(),
-        proxy: (() => {
-          const r: {
-            [path: string]: ProxyProps
-          } = {}
-
-          hostParams.forEach((hostObj) => {
-            r[hostObj.replaceStr] = {
-              target: `http://${hostObj.hostname}`,
-              changeOrigin: true,
-              pathRewrite: (() => {
-                const r2: ProxyProps['pathRewrite'] = {}
-                r2[`^${hostObj.replaceStr}`] = ''
-                return r2
-              })()
-            }
-          })
-
-          return r
-        })(),
-        before: (app, server, compiler) => {
-          const { historyApiFallback } = option.devServer
-          if (historyApiFallback && historyApiFallback !== true) {
-            /**
-             * 由于 proxy 后通过域名访问 404 页面无法正确重定向，
-             * 通过 添加 header.accept, 跳过 historyApiFallback 前置校验
-             *  */
-            app.use((req, res, next) => {
-              const matchRewrite =
-                historyApiFallback.rewrites &&
-                historyApiFallback.rewrites.length &&
-                historyApiFallback.rewrites.some((item) => req.url.match(item.from))
-              if (
-                req.method === 'GET' &&
-                req.headers &&
-                ([''].includes(path.extname(req.url)) || matchRewrite)
-              ) {
-                req.headers.accept =
-                  'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
-              }
-              next()
-            })
-          }
-          if (option.devServer.before) {
-            option.devServer.before(app, server, compiler)
+        if (option.devServer.headers) {
+          r = {
+            ...r,
+            ...option.devServer.headers
           }
         }
-      },
-      logs
-    }
+        return r
+      })(),
+      proxy: (() => {
+        const r: {
+          [path: string]: ProxyProps
+        } = {}
 
-    // TODO: throw base info
+        hostParams.forEach((hostObj) => {
+          r[hostObj.replaceStr] = {
+            target: `http://${hostObj.hostname}`,
+            changeOrigin: true,
+            pathRewrite: (() => {
+              const r2: ProxyProps['pathRewrite'] = {}
+              r2[`^${hostObj.replaceStr}`] = ''
+              return r2
+            })()
+          }
+        })
+
+        if (typeof option.devServer.proxy === 'object') {
+          Object.keys(option.devServer.proxy).forEach((key) => {
+            if (option?.devServer?.proxy && key in option?.devServer?.proxy) {
+              r[key] = (option.devServer.proxy as any)[key]
+            }
+          })
+        }
+
+        return r
+      })(),
+      before: (app, server, compiler) => {
+        const { historyApiFallback } = option.devServer
+        if (historyApiFallback && historyApiFallback !== true) {
+          /**
+           * 由于 proxy 后通过域名访问 404 页面无法正确重定向，
+           * 通过 添加 header.accept, 跳过 historyApiFallback 前置校验
+           *  */
+          app.use((req, res, next) => {
+            const matchRewrite =
+              historyApiFallback.rewrites &&
+              historyApiFallback.rewrites.length &&
+              historyApiFallback.rewrites.some((item) => req.url.match(item.from))
+            if (
+              req.method === 'GET' &&
+              req.headers &&
+              ([''].includes(path.extname(req.url)) || matchRewrite)
+            ) {
+              req.headers.accept =
+                'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+            }
+            next()
+          })
+        }
+        if (option.devServer.before) {
+          option.devServer.before(app, server, compiler)
+        }
+      }
+    }
 
     return r
   }
@@ -231,6 +237,7 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
   /** proxy 操作 页面的 url 替换 */
   async apply(compiler: Compiler) {
     const { option } = this
+    const { options } = compiler
 
     const iHosts = option?.proxy?.hosts || []
 
@@ -246,6 +253,29 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
         const iHooks = getHooks(compilation)
         const logger = compilation.getLogger(PLUGIN_NAME)
         logger.group(PLUGIN_NAME)
+
+        if (options.devServer) {
+          logger.info(
+            `${chalk.red('*')} ${LANG.PORT_INFO}: ${chalk.yellow(options.devServer.port)}`
+          )
+          logger.info(
+            `${chalk.red('*')} ${LANG.DIST_INFO}: ${chalk.yellow(options.devServer.contentBase)}`
+          )
+
+          if (options.devServer?.proxy) {
+            logger.info(`${chalk.red('*')} ${LANG.PROXY_INFO}:`)
+            const iProxy = options.devServer?.proxy as ProxyConfigMap
+            Object.keys(iProxy).forEach((key: keyof ProxyConfigMap) => {
+              const proxyInfo = iProxy[key]
+              if (typeof proxyInfo === 'string') {
+                logger.info(`> ${chalk.yellow(key)} -> ${proxyInfo}`)
+              } else {
+                logger.info(`> ${chalk.yellow(key)} -> ${proxyInfo.target}`)
+              }
+            })
+          }
+        }
+
         if (hostParams.length && isWatchMode) {
           Object.keys(compilation.assets)
             .filter((key) => {

@@ -9,9 +9,11 @@ console.log(IPlugin)
 // + plugin options
 const iPluginOption = {
   context: __dirname,
-  static: './dist',
-  port: 5000,
-  enable: true,
+  devServer: {
+    noInfo: false,
+    contentBase: path.join(__dirname, './dist'),
+    port: 5000
+  },
   homePage: 'http://127.0.0.1:5000/html/index.html',
   proxy: {
     enable: true,
@@ -19,6 +21,8 @@ const iPluginOption = {
   }
 }
 // - plugin options
+
+const devServer = IPlugin.initDevServerConfig(iPluginOption)
 
 const wConfig = merge({
   mode: 'development',
@@ -65,11 +69,7 @@ const wConfig = merge({
     }),
     new IPlugin(iPluginOption)
   ],
-  devServer: {
-    writeToDisk: true,
-    contentBase: path.join(__dirname, './dist'),
-    port: 5000
-  }
+  devServer
 })
 
 module.exports = wConfig
