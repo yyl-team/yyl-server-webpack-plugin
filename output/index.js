@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.1.4
+ * yyl-server-webpack-plugin cjs 1.2.0
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -12,6 +12,7 @@ var tapable = require('tapable');
 var chalk = require('chalk');
 var yylWebpackPluginBase = require('yyl-webpack-plugin-base');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var httpProxyMiddleware = require('http-proxy-middleware');
 var url = require('url');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -70,7 +71,9 @@ const LANG = {
     PROXY_DETAIL: '->',
     HOME_PAGE: '主页',
     REPLACE_INFO: '文件替換',
-    REPLACE_NONE: '暂无'
+    REPLACE_NONE: '暂无',
+    INIT_PROXY_MIDDLEWARE_START: '初始化 代理中间件 开始',
+    INIT_PROXY_MIDDLEWARE_FINISHED: '初始化 代理中间件 完成'
 };
 
 const PLUGIN_NAME = 'yylServer';
@@ -148,6 +151,32 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         super(Object.assign(Object.assign({}, option), { name: PLUGIN_NAME }));
         this.option = DEFAULT_OPTIONS;
         this.option = initPluginOption(option);
+    }
+    /** 初始化 proxy 中间件 */
+    static initProxyMiddleware(op) {
+        var _a;
+        const { proxy, app } = op;
+        const logger = op.logger || (() => undefined);
+        if ((proxy === null || proxy === void 0 ? void 0 : proxy.enable) && ((_a = proxy.hosts) === null || _a === void 0 ? void 0 : _a.length)) {
+            logger('msg', 'info', [LANG.INIT_PROXY_MIDDLEWARE_START]);
+            const hostParams = proxy.hosts.map((url) => formatHost(url));
+            logger('msg', 'info', [LANG.PROXY_INFO]);
+            hostParams.forEach((obj) => {
+                const target = `http://${obj.hostname}`;
+                app.use(obj.replaceStr, httpProxyMiddleware.createProxyMiddleware({
+                    target,
+                    changeOrigin: true,
+                    pathRewrite: (() => {
+                        const r = {};
+                        r[obj.replaceStr] = '';
+                        return r;
+                    })(),
+                    logLevel: op.logLevel === 2 ? 'debug' : 'silent'
+                }));
+                logger('msg', 'info', [`${obj.replaceStr} -> ${chalk__default['default'].cyan(target)}`]);
+            });
+            logger('msg', 'info', [LANG.INIT_PROXY_MIDDLEWARE_FINISHED]);
+        }
     }
     /** devServer 配置初始化 */
     static initDevServerConfig(op) {

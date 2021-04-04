@@ -8,5 +8,7 @@ export const LANG = {
   PROXY_DETAIL: '->',
   HOME_PAGE: '主页',
   REPLACE_INFO: '文件替換',
-  REPLACE_NONE: '暂无'
+  REPLACE_NONE: '暂无',
+  INIT_PROXY_MIDDLEWARE_START: '初始化 代理中间件 开始',
+  INIT_PROXY_MIDDLEWARE_FINISHED: '初始化 代理中间件 完成'
 }
