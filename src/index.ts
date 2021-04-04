@@ -5,15 +5,13 @@ import { getHooks } from './hooks'
 import chalk from 'chalk'
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import { Options as HttpProxyMiddlewareOption, createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 import { Logger } from 'yyl-seed-base'
 import { Express } from 'express'
 import { URL } from 'url'
 import { LANG } from './const'
 
 const PLUGIN_NAME = 'yylServer'
-
-export type LoggerType = 'warn' | 'info' | 'success' | 'warn' | 'error'
 
 export { Options as HttpProxyMiddlewareOption } from 'http-proxy-middleware'
 
@@ -48,6 +46,7 @@ export interface InitProxyMiddlewareOption {
   proxy: YylServerWebpackPluginOption['proxy']
   app: Express
   logger?: Logger
+  logLevel?: 0 | 1 | 2
 }
 
 export interface ProxyProps {
@@ -155,6 +154,7 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
       logger('msg', 'info', [LANG.INIT_PROXY_MIDDLEWARE_START])
       const hostParams = proxy.hosts.map((url) => formatHost(url))
       logger('msg', 'info', [LANG.PROXY_INFO])
+
       hostParams.forEach((obj) => {
         const target = `http://${obj.hostname}`
         app.use(
@@ -166,7 +166,8 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
               const r: ProxyProps['pathRewrite'] = {}
               r[obj.replaceStr] = ''
               return r
-            })()
+            })(),
+            logLevel: op.logLevel === 2 ? 'debug' : 'silent'
           })
         )
         logger('msg', 'info', [`${obj.replaceStr} -> ${chalk.cyan(target)}`])

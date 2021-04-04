@@ -9,4 +9,6 @@ export declare const LANG: {
     HOME_PAGE: string;
     REPLACE_INFO: string;
     REPLACE_NONE: string;
+    INIT_PROXY_MIDDLEWARE_START: string;
+    INIT_PROXY_MIDDLEWARE_FINISHED: string;
 };

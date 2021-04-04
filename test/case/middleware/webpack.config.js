@@ -69,8 +69,7 @@ const wConfig = merge({
       chunks: 'all'
     }),
     new IPlugin(iPluginOption)
-  ],
-  devServer
+  ]
 })
 
 module.exports = wConfig

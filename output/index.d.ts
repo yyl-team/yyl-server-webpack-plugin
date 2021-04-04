@@ -2,7 +2,9 @@ import { Compiler, Compilation } from 'webpack';
 import { Configuration } from 'webpack-dev-server';
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-export declare type LoggerType = 'warn' | 'info' | 'success' | 'warn' | 'error';
+import { Logger } from 'yyl-seed-base';
+import { Express } from 'express';
+export { Options as HttpProxyMiddlewareOption } from 'http-proxy-middleware';
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
     devServer?: Configuration;
     /** https */
@@ -22,6 +24,13 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
 export declare type YylServerWebpackPluginProperty = Required<Omit<YylServerWebpackPluginOption, 'HtmlWebpackPlugin'>> & {
     HtmlWebpackPlugin?: typeof HtmlWebpackPlugin;
 };
+/** 初始化 proxy 中间件 - 配置 */
+export interface InitProxyMiddlewareOption {
+    proxy: YylServerWebpackPluginOption['proxy'];
+    app: Express;
+    logger?: Logger;
+    logLevel?: 0 | 1 | 2;
+}
 export interface ProxyProps {
     target: string;
     changeOrigin: boolean;
@@ -31,6 +40,8 @@ export interface ProxyProps {
 }
 /** 初始化 devServer plugin */
 export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
+    /** 初始化 proxy 中间件 */
+    static initProxyMiddleware(op: InitProxyMiddlewareOption): void;
     /** devServer 配置初始化 */
     static initDevServerConfig(op?: YylServerWebpackPluginOption): Configuration;
     static getHooks(compilation: Compilation): any;
