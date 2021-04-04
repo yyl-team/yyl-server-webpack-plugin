@@ -5,12 +5,17 @@ import { getHooks } from './hooks'
 import chalk from 'chalk'
 import { YylWebpackPluginBaseOption, YylWebpackPluginBase } from 'yyl-webpack-plugin-base'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import { Options as HttpProxyMiddlewareOption, createProxyMiddleware } from 'http-proxy-middleware'
+import { Logger } from 'yyl-seed-base'
+import { Express } from 'express'
 import { URL } from 'url'
 import { LANG } from './const'
 
 const PLUGIN_NAME = 'yylServer'
 
 export type LoggerType = 'warn' | 'info' | 'success' | 'warn' | 'error'
+
+export { Options as HttpProxyMiddlewareOption } from 'http-proxy-middleware'
 
 export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseOption, 'context'> {
   devServer?: Configuration
@@ -36,6 +41,13 @@ export type YylServerWebpackPluginProperty = Required<
   Omit<YylServerWebpackPluginOption, 'HtmlWebpackPlugin'>
 > & {
   HtmlWebpackPlugin?: typeof HtmlWebpackPlugin
+}
+
+/** 初始化 proxy 中间件 - 配置 */
+export interface InitProxyMiddlewareOption {
+  proxy: YylServerWebpackPluginOption['proxy']
+  app: Express
+  logger?: Logger
 }
 
 export interface ProxyProps {
@@ -135,6 +147,34 @@ function initPluginOption(op?: YylServerWebpackPluginOption): YylServerWebpackPl
 
 /** 初始化 devServer plugin */
 export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
+  /** 初始化 proxy 中间件 */
+  static initProxyMiddleware(op: InitProxyMiddlewareOption) {
+    const { proxy, app } = op
+    const logger: Logger = op.logger || (() => undefined)
+    if (proxy?.enable && proxy.hosts?.length) {
+      logger('msg', 'info', [LANG.INIT_PROXY_MIDDLEWARE_START])
+      const hostParams = proxy.hosts.map((url) => formatHost(url))
+      logger('msg', 'info', [LANG.PROXY_INFO])
+      hostParams.forEach((obj) => {
+        const target = `http://${obj.hostname}`
+        app.use(
+          obj.replaceStr,
+          createProxyMiddleware({
+            target,
+            changeOrigin: true,
+            pathRewrite: (() => {
+              const r: ProxyProps['pathRewrite'] = {}
+              r[obj.replaceStr] = ''
+              return r
+            })()
+          })
+        )
+        logger('msg', 'info', [`${obj.replaceStr} -> ${chalk.cyan(target)}`])
+      })
+      logger('msg', 'info', [LANG.INIT_PROXY_MIDDLEWARE_FINISHED])
+    }
+  }
+
   /** devServer 配置初始化 */
   static initDevServerConfig(op?: YylServerWebpackPluginOption): Configuration {
     const option = initPluginOption(op)

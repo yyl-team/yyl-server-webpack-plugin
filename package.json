@@ -1,5 +1,5 @@
 {
-  "version": "1.1.4",
+  "version": "1.2.0",
   "main": "output/index.js",
   "types": "output/index.d.ts",
   "eslintConfig": {
@@ -68,10 +68,14 @@
   "author": "liudaojie <liudaojie@yy.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/express": "^4.17.11",
+    "@types/http-proxy-middleware": "^1.0.0",
     "@types/webpack-dev-server": "^3.11.2",
     "chalk": "^4.1.0",
+    "http-proxy-middleware": "^1.1.0",
     "tapable": "^2.2.0",
     "yyl-config-types": "^0.3.17",
+    "yyl-seed-base": "^0.2.6",
     "yyl-webpack-plugin-base": "^0.2.1"
   }
 }
