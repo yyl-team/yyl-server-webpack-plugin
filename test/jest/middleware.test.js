@@ -23,7 +23,7 @@ test('case base test', async () => {
   process.chdir(targetPath)
   const start = require(path.join(targetPath, 'compiler.js'))
 
-  const app = await start()
+  const { app, compiler } = await start()
 
   request(app)
     .get('/proxy_www_yy_com/yyweb/module/data/header')
@@ -33,4 +33,10 @@ test('case base test', async () => {
         throw err
       }
     })
+
+  await new Promise((resolve) => {
+    compiler.close(() => {
+      resolve()
+    })
+  })
 })

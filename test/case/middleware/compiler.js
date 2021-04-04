@@ -20,9 +20,19 @@ module.exports = function start() {
         console.log(...args)
       }
     })
-    compiler.run((err, result) => {
+    // compiler.run((err, result) => {
+    //   console.log(result.toString())
+    //   resolve({
+    //     app,
+    //     compiler
+    //   })
+    // })
+    compiler.watch({}, (err, result) => {
       console.log(result.toString())
-      resolve(app)
+      resolve({
+        app,
+        compiler
+      })
     })
   })
 }
