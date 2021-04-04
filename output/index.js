@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.2.0
+ * yyl-server-webpack-plugin cjs 1.2.1
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -79,10 +79,19 @@ const LANG = {
 const PLUGIN_NAME = 'yylServer';
 function formatHost(url$1) {
     const iUrl = `http:${url$1.replace(/^https?:/, '')}`;
-    const { hostname } = new url.URL(iUrl);
+    const { hostname, pathname } = new url.URL(iUrl);
     return {
         hostname,
-        replaceStr: `/proxy_${hostname.replace(/\./g, '_')}`
+        /** 替换成本地路径 */
+        localProxyPath: `/proxy_${hostname.replace(/\./g, '_')}${pathname}`,
+        /** 代理的目标路径 */
+        target: `http://${hostname}${pathname}`,
+        /** 远程有可能命中的路径 */
+        remoteProxyPaths: [
+            `http://${hostname}${pathname}`,
+            `https://${hostname}${pathname}`,
+            `//${hostname}${pathname}`
+        ]
     };
 }
 const DEFAULT_OPTIONS = {
@@ -162,18 +171,17 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             const hostParams = proxy.hosts.map((url) => formatHost(url));
             logger('msg', 'info', [LANG.PROXY_INFO]);
             hostParams.forEach((obj) => {
-                const target = `http://${obj.hostname}`;
-                app.use(obj.replaceStr, httpProxyMiddleware.createProxyMiddleware({
-                    target,
+                app.use(obj.localProxyPath, httpProxyMiddleware.createProxyMiddleware({
+                    target: obj.target,
                     changeOrigin: true,
                     pathRewrite: (() => {
                         const r = {};
-                        r[obj.replaceStr] = '';
+                        r[obj.localProxyPath] = '';
                         return r;
                     })(),
                     logLevel: op.logLevel === 2 ? 'debug' : 'silent'
                 }));
-                logger('msg', 'info', [`${obj.replaceStr} -> ${chalk__default['default'].cyan(target)}`]);
+                logger('msg', 'info', [`${obj.localProxyPath} -> ${obj.target}`]);
             });
             logger('msg', 'info', [LANG.INIT_PROXY_MIDDLEWARE_FINISHED]);
         }
@@ -203,12 +211,12 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             })(), proxy: (() => {
                 const r = {};
                 hostParams.forEach((hostObj) => {
-                    r[hostObj.replaceStr] = {
-                        target: `http://${hostObj.hostname}`,
+                    r[hostObj.localProxyPath] = {
+                        target: hostObj.target,
                         changeOrigin: true,
                         pathRewrite: (() => {
                             const r2 = {};
-                            r2[`^${hostObj.replaceStr}`] = '';
+                            r2[`^${hostObj.localProxyPath}`] = '';
                             return r2;
                         })()
                     };
@@ -268,14 +276,10 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                 let content = ctx;
                 const replaceLogs = [];
                 hostParams.forEach((hostObj) => {
-                    [
-                        `http://${hostObj.hostname}`,
-                        `https://${hostObj.hostname}`,
-                        `//${hostObj.hostname}`
-                    ].forEach((mathPath) => {
+                    hostObj.remoteProxyPaths.forEach((mathPath) => {
                         if (content.match(mathPath)) {
-                            replaceLogs.push(`${LANG.REPLACE}: ${mathPath} -> ${chalk__default['default'].cyan(hostObj.replaceStr)}`);
-                            content = content.split(mathPath).join(hostObj.replaceStr);
+                            replaceLogs.push(`${LANG.REPLACE}: ${mathPath} -> ${chalk__default['default'].cyan(hostObj.localProxyPath)}`);
+                            content = content.split(mathPath).join(hostObj.localProxyPath);
                         }
                     });
                 });
@@ -284,10 +288,6 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                     replaceLogs
                 };
             };
-            let isWatchMode = false;
-            compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
-                isWatchMode = true;
-            });
             // html-webpack-config
             const { HtmlWebpackPlugin } = option;
             if (HtmlWebpackPlugin) {
@@ -334,7 +334,7 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                             logger.info(`${chalk__default['default'].yellow(LANG.HOME_PAGE)}: ${chalk__default['default'].cyan((_e = options.devServer) === null || _e === void 0 ? void 0 : _e.openPage)}`);
                         }
                     }
-                    if (hostParams.length && isWatchMode) {
+                    if (hostParams.length) {
                         logger.info(`${chalk__default['default'].yellow(LANG.REPLACE_INFO)}:`);
                         Object.keys(compilation.assets)
                             .filter((key) => {

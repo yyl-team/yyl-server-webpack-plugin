@@ -14,13 +14,14 @@ module.exports = function start() {
       app,
       proxy: {
         enable: true,
-        hosts: ['//www.yy.com']
+        hosts: ['//www.yy.com/yyweb/module/']
       },
       logger(...args) {
         console.log(...args)
       }
     })
-    compiler.run(() => {
+    compiler.run((err, result) => {
+      console.log(result.toString())
       resolve(app)
     })
   })
