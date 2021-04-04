@@ -303,6 +303,11 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
 
     let changed = false
 
+    let isWatching = false
+    compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
+      isWatching = true
+    })
+
     const replaceHandle = (
       ctx: string
     ): {
@@ -332,6 +337,9 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
     const { HtmlWebpackPlugin } = option
     if (HtmlWebpackPlugin) {
       compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+        if (!isWatching) {
+          return
+        }
         const logger = compilation.getLogger(PLUGIN_NAME)
         HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(
           PLUGIN_NAME,
@@ -351,10 +359,12 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
         )
       })
     }
-
     this.initCompilation({
       compiler,
       onProcessAssets: async (compilation) => {
+        if (!isWatching) {
+          return
+        }
         const iHooks = getHooks(compilation)
         const logger = compilation.getLogger(PLUGIN_NAME)
         logger.group(PLUGIN_NAME)

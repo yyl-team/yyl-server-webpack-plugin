@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.2.1
+ * yyl-server-webpack-plugin cjs 1.2.2
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -272,6 +272,10 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             const iHosts = ((_a = option === null || option === void 0 ? void 0 : option.proxy) === null || _a === void 0 ? void 0 : _a.hosts) || [];
             const hostParams = option.proxy.enable ? iHosts.map((url) => formatHost(url)) : [];
             let changed = false;
+            let isWatching = false;
+            compiler.hooks.watchRun.tap(PLUGIN_NAME, () => {
+                isWatching = true;
+            });
             const replaceHandle = (ctx) => {
                 let content = ctx;
                 const replaceLogs = [];
@@ -292,6 +296,9 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             const { HtmlWebpackPlugin } = option;
             if (HtmlWebpackPlugin) {
                 compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+                    if (!isWatching) {
+                        return;
+                    }
                     const logger = compilation.getLogger(PLUGIN_NAME);
                     HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(PLUGIN_NAME, (info, cb) => __awaiter(this, void 0, void 0, function* () {
                         const { content, replaceLogs } = replaceHandle(info.html);
@@ -311,6 +318,9 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                 compiler,
                 onProcessAssets: (compilation) => __awaiter(this, void 0, void 0, function* () {
                     var _b, _c, _d, _e;
+                    if (!isWatching) {
+                        return;
+                    }
                     const iHooks = getHooks(compilation);
                     const logger = compilation.getLogger(PLUGIN_NAME);
                     logger.group(PLUGIN_NAME);
