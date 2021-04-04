@@ -5,7 +5,7 @@ const express = require('express')
 const serveStatic = require('serve-static')
 const wConfig = require('./webpack.config')
 
-module.exports = function start () {
+module.exports = function start() {
   return new Promise((resolve) => {
     const compiler = webpack(wConfig)
     const app = express()
@@ -25,4 +25,3 @@ module.exports = function start () {
     })
   })
 }
-

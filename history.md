@@ -1,6 +1,9 @@
 # 版本变更
+
 ## 1.2.0 (2021-04-05)
+
 - feat: 添加初始化 http-proxy-middleware 的场景
+
 ## 1.1.4 (2021-03-11)
 
 - feat: 适配 html-webpack-plugin hooks
