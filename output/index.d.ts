@@ -15,6 +15,8 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
         hosts?: string[];
         /** 是否激活 */
         enable?: boolean;
+        /** 日志类型 */
+        logLevel?: 0 | 1 | 2;
     };
     /** 构建成功后打开的页面 */
     homePage?: string;
@@ -29,7 +31,7 @@ export interface InitProxyMiddlewareOption {
     proxy: YylServerWebpackPluginOption['proxy'];
     app: Express;
     logger?: Logger;
-    logLevel?: 0 | 1 | 2;
+    logLevel?: Required<YylServerWebpackPluginOption>['proxy']['logLevel'];
 }
 export interface ProxyProps {
     target: string;
@@ -37,6 +39,7 @@ export interface ProxyProps {
     pathRewrite: {
         [reg: string]: string;
     };
+    logLevel?: 'info' | 'debug' | 'error' | 'warn' | 'silent';
 }
 /** 初始化 devServer plugin */
 export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
