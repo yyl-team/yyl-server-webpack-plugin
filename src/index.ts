@@ -1,5 +1,5 @@
 import path from 'path'
-import { Compiler, Compilation } from 'webpack'
+import { Compiler, Compilation, EnvironmentPlugin } from 'webpack'
 import { Configuration, ProxyConfigMap } from 'webpack-dev-server'
 import { getHooks } from './hooks'
 import chalk from 'chalk'
@@ -27,6 +27,8 @@ export interface YylServerWebpackPluginOption extends Pick<YylWebpackPluginBaseO
     hosts?: string[]
     /** 是否激活 */
     enable?: boolean
+    /** 日志类型 */
+    logLevel?: 0 | 1 | 2
   }
   /** 构建成功后打开的页面 */
   homePage?: string
@@ -46,7 +48,7 @@ export interface InitProxyMiddlewareOption {
   proxy: YylServerWebpackPluginOption['proxy']
   app: Express
   logger?: Logger
-  logLevel?: 0 | 1 | 2
+  logLevel?: Required<YylServerWebpackPluginOption>['proxy']['logLevel']
 }
 
 export interface ProxyProps {
@@ -55,6 +57,7 @@ export interface ProxyProps {
   pathRewrite: {
     [reg: string]: string
   }
+  logLevel?: 'info' | 'debug' | 'error' | 'warn' | 'silent'
 }
 
 function formatHost(url: string) {
@@ -97,7 +100,8 @@ const DEFAULT_OPTIONS: YylServerWebpackPluginProperty = {
   HtmlWebpackPlugin,
   proxy: {
     hosts: [],
-    enable: false
+    enable: false,
+    logLevel: 0
   }
 }
 
@@ -226,7 +230,8 @@ export default class YylServerWebpackPlugin extends YylWebpackPluginBase {
               const r2: ProxyProps['pathRewrite'] = {}
               r2[`^${hostObj.localProxyPath}`] = ''
               return r2
-            })()
+            })(),
+            logLevel: option.proxy.logLevel === 2 ? 'debug' : 'silent'
           }
         })
 

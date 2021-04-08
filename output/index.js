@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.2.2
+ * yyl-server-webpack-plugin cjs 1.2.4
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -116,7 +116,8 @@ const DEFAULT_OPTIONS = {
     HtmlWebpackPlugin: HtmlWebpackPlugin__default['default'],
     proxy: {
         hosts: [],
-        enable: false
+        enable: false,
+        logLevel: 0
     }
 };
 /** 插件 option 初始化 */
@@ -218,7 +219,8 @@ class YylServerWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                             const r2 = {};
                             r2[`^${hostObj.localProxyPath}`] = '';
                             return r2;
-                        })()
+                        })(),
+                        logLevel: option.proxy.logLevel === 2 ? 'debug' : 'silent'
                     };
                 });
                 if (typeof option.devServer.proxy === 'object') {

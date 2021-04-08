@@ -27,6 +27,10 @@ test('case base test', async () => {
 
   request(app)
     .get('/proxy_www_yy_com/yyweb/module/data/header')
+    .set({
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
+    })
     .expect(200)
     .end((err) => {
       if (err) {
