@@ -1,5 +1,5 @@
 /*!
- * yyl-server-webpack-plugin cjs 1.2.4
+ * yyl-server-webpack-plugin cjs 1.2.5
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */

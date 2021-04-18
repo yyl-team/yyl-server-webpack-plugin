@@ -1,5 +1,9 @@
 # 版本变更
 
+## 1.2.5 (2021-04-08)
+
+- feat: 更新 `yyl-config-types@0.4.3`
+
 ## 1.2.4 (2021-04-08)
 
 - feat: 补充 proxy.logLevel 参数
