@@ -1,5 +1,10 @@
 # 版本变更
 
+## 1.3.0 (2021-05-07)
+
+- feat: 更新 `yyl-config-types@0.5.1`
+- feat: 更新 `yyl-seed-base@0.3.0`
+
 ## 1.2.5 (2021-04-08)
 
 - feat: 更新 `yyl-config-types@0.4.3`
