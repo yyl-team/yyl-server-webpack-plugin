@@ -14,7 +14,7 @@ module.exports = function start() {
       app,
       proxy: {
         enable: true,
-        hosts: ['//www.yy.com/yyweb/module/']
+        hosts: ['//9u9ntpb8xp.api.quickmocker.com/']
       },
       logger(...args) {
         console.log(...args)

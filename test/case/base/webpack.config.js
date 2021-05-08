@@ -17,7 +17,7 @@ const iPluginOption = {
   homePage: 'http://127.0.0.1:5000/html/index.html',
   proxy: {
     enable: true,
-    hosts: ['//www.yy.com'],
+    hosts: ['//www.testhost.com'],
     logLevel: 2
   },
   HtmlWebpackPlugin
