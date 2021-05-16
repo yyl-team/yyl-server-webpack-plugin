@@ -5973,10 +5973,10 @@ yocto-queue@^0.1.0:
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-yyl-config-types@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.npmjs.org/yyl-config-types/-/yyl-config-types-0.5.1.tgz#3cdb6a962dc235c45bf0f4ef1d19d3dddf07b7c6"
-  integrity sha512-UX2pF4shsLzO0Mnnxqw+3KDaRMjYBUxn4GqOBfvi1OZ5llQiN66qv2pc11ZAplor5hMPTP+yO7VKMJvKd8leig==
+yyl-config-types@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/yyl-config-types/-/yyl-config-types-0.5.2.tgz#5deccdad04aaee78bb93d26bb272a77801a994de"
+  integrity sha512-53psEXWt954RuZ2Rh/ryfhaLMv3NJtqv6/nZBbM3z53dutub9q40ABigNZ3fsN36XUTznUpkf141d2qDy7qLjg==
   dependencies:
     "@types/express" "^4.17.11"
 
